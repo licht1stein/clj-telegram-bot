@@ -1,9 +1,9 @@
 (ns telegram.bot.dispatcher
-  (:require [clojure.string :as str]
-            [taoensso.timbre :as timbre]
-            [integrant.core :as ig]))
+  (:require [clojure.string :as str]))
 
-(defn message-type [upd]
+(def *ctx (atom {}))
+
+(defn- message-type [upd]
   (-> upd
       :message
       :entities
@@ -34,38 +34,19 @@
         :else :unrecognized))
 
 
-(defmulti command command?)
+(defmulti command (fn [upd _] (command? upd)))
 
-(defmethod command :default [_]
-  (timbre/debug ::command :unknown))
+(defmethod command :default [upd ctx])
 
-(defmulti text message-text?)
+(defmulti text (fn [upd _] (message-text? upd)))
 
-(defmethod text :default [_])
+(defmethod text :default [upd ctx])
 
-(defmulti dispatch update-type)
+(defmulti dispatch (fn [upd _] (update-type upd)))
 
-(defmethod dispatch :command [upd]
-  (timbre/info ::dispatch :command (command? upd))
-  (command upd))
+(defmethod dispatch :command [upd ctx]
+  (command upd ctx))
 
-(defmethod dispatch :text [upd]
-  (timbre/debug ::dispatch :text)
-  (text upd))
+(defmethod dispatch :text [upd ctx]
+  (text upd ctx))
 
-
-(comment
-  (require '[telegram.server.core :refer [upd d]])
-  upd
-  (d)
-  (d upd)
-  (update-type upd)
-
-  (command? upd)
-  (dispatch upd)
-  (message-text? upd))
-
-(defmethod ig/init-key :systems/dispatcher
-  [_ _]
-  (timbre/debug ::dispatcher :init)
-  dispatch)
