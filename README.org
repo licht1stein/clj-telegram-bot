@@ -51,3 +51,14 @@ So the corresponding code is:
 #+begin_src clojure
   (def telegram (bot/from-op "ITEM_ID" "FIELD_NAME"))
 #+end_src
+
+** Arbitrary function
+You can also initiate the config by passing an arbitrary function that takes no arguments and returns a string with bot token in it:
+
+#+begin_src clojure
+  (defn my-token-getter []
+    ;; some magical code that gets the token
+    )
+
+  (def telegram (bot/from-fn my-token-getter))
+#+end_src
