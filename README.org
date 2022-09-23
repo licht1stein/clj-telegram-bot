@@ -22,7 +22,7 @@ Let's see what we need to do to make a simple echo bot that does two things:
 
   ;; Define a command handler
   (defmethod t.dispatcher/command "/start" [upd ctx]
-    {:reply-text {:text "Start command"}})
+    {:reply-text {:text "This is a start command"}})
 
   ;; Define a text handler for any non-specific text
   (defmethod t.dispatcher/text :default [upd ctx]
