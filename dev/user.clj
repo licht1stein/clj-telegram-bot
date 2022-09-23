@@ -9,6 +9,9 @@
 (defmethod tg.dispatcher/command "/start" [upd ctx]
   {:reply-text {:text "Start command"}})
 
+(defmethod tg.dispatcher/text :default [upd ctx]
+  {:reply-text {:text (tg.dispatcher/message-text? upd)}})
+
 (comment
   (tg.api/delete-webhook config)
   (def dispatcher (tg.dispatcher/make-dispatcher config))
