@@ -20,17 +20,19 @@ Let's see what we need to do to make a simple echo bot that does two things:
 
   (def config (t/from-token "MY_BOT_TOKEN"))
 
+  ;; Define a command handler
   (defmethod t.dispatcher/command "/start" [upd ctx]
     {:reply-text {:text "Start command"}})
 
+  ;; Define a text handler for any non-specific text
   (defmethod t.dispatcher/text :default [upd ctx]
     {:reply-text {:text (t.u/message-text? upd)}})
 
   (def dispatcher (t.dispatcher/make-dispatcher config))
-
   (def updater (t/start-polling config dispatcher))
 
   (comment
+    "Run this to stop long-polling updater"
     (t/stop-polling updater))
 #+end_src
 
