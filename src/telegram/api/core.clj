@@ -1,44 +1,9 @@
-(ns telegram.bot.core
+(ns telegram.api.core
   (:require [clojure.string :as str]
             [clojure.java.io :as io]
-            [clojure.string :as str]
-            [clojure.java.shell :as shell]
             [org.httpkit.client :as http]
             [cheshire.core :as json]
-            [taoensso.timbre :as timbre]
-            [integrant.core :as ig]))
-
-(def default-data {:user-agent "clj-telegram-bot"
-                   :timeout 300000
-                   :keepalive 300000})
-
-(defn from-token
-  "Create a map of telegram params using token and check that it works."
-  [token & {:keys [] :as opts}]
-  (assert (seq token) "No token provided or token is empty.")
-  (merge default-data {:token token} opts))
-
-(defn from-env
-  "Create a map of telegram params using env var BOT_TOKEN and check that it works."
-  [& {:keys [] :as opts}]
-  (from-token (System/getenv "BOT_TOKEN") opts))
-
-(defn from-fn
-  "Create a map of telegram params by providing a function that returns a bot token"
-  [token-fn & {:keys [] :as opts}]
-  (from-token (token-fn) opts))
-
-(defn from-pass
-  "Get token from `pass` secrets manager."
-  [key]
-  (from-token (-> (shell/sh "pass" key) :out str/trim)))
-
-(defn from-op
-  "Get token from 1Password CLI."
-  [item field]
-  (-> (shell/sh "op" "item" "get" item "--fields" field)
-      :out
-      (str/trim)))
+            [camel-snake-kebab.core :as csk]))
 
 (defn filter-params
   "Filter out nil values from a map."
@@ -127,7 +92,7 @@
             ;; parse JSON manually as Http Kit cannot
             body-json
             (if json?
-              (-> body io/reader (json/decode-stream keyword))
+              (-> body io/reader (json/decode-stream csk/->kebab-case-keyword))
               (throw (ex-info (format "Telegram response was not JSON: %s" content-type)
                               {:http-status status
                                :http-method http-method
@@ -252,7 +217,6 @@
   (zipmap chat-permission-types (repeat false)))
 
 (defn restrict-user
-
   ([config chat-id user-id permissions]
    (restrict-user config chat-id user-id permissions nil))
 
@@ -285,9 +249,3 @@
 
 (defn set-webhook [config url & {:keys [secret-token drop-pending?]}]
   (api-request config :setWebhook :post {:url url :secret_token secret-token :drop_pending_updates (boolean drop-pending?)}))
-
-(defmethod ig/init-key :systems/bot
-  [_ {:keys [systems/config]}]
-  (timbre/debug ::bot :systems/bot :init)
-  (from-token (-> config :bot :token)))
-
