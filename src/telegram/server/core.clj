@@ -28,7 +28,6 @@
                               io/reader
                               slurp
                               (json/parse-string csk/->kebab-case-keyword))]
-                 (def upd body)
                  (dispatcher body)
                  )
                {:status 201})}]])))

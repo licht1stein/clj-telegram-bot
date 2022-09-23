@@ -47,7 +47,7 @@
                        (cond-> {}
                          (some? last-update-id) (assoc :offset last-update-id)))]
           (doseq [upd updates]
-            (go (dispatcher upd {})))
+            (go (dispatcher upd)))
           (<! (timeout 1000))
           (recur (if (seq updates)
                    (-> updates last :update-id inc)

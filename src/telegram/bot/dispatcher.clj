@@ -1,5 +1,6 @@
 (ns telegram.bot.dispatcher
   (:require [clojure.string :as str]
+            [telegram.updates :as u]
             [telegram.api.core :as api]))
 
 (def *ctx (atom {}))
@@ -11,15 +12,10 @@
       first
       :type))
 
-(defn message-text? [upd]
-  (-> upd
-      :message
-      :text))
-
 (defn command? [upd]
   (when (= (message-type upd) "bot_command")
     (-> upd
-        message-text?
+        u/message-text?
         (str/split #" ")
         first)))
 
@@ -30,7 +26,7 @@
 
 (defn update-type [upd]
   (cond (command? upd) :command
-        (message-text? upd) :text
+        (u/message-text? upd) :text
         (callback-query? upd) :callback-query
         :else :unrecognized))
 
@@ -39,7 +35,7 @@
 
 (defmethod command :default [upd ctx])
 
-(defmulti text (fn [upd _] (message-text? upd)))
+(defmulti text (fn [upd _] (u/message-text? upd)))
 
 (defmethod text :default [upd ctx])
 
@@ -60,7 +56,7 @@
 
 (defn make-dispatcher [config]
   (let [dispatcher
-        (fn [upd ctx]
-          (let [actions (dispatch upd ctx)]
-            (process-actions config upd ctx actions)))]
+        (fn [upd]
+          (let [actions (dispatch upd @*ctx)]
+            (process-actions config upd @*ctx actions)))]
     dispatcher))

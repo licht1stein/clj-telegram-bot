@@ -7,14 +7,42 @@ That's the goal.
 * Warning!
 *This library is at it's first development stages. It will be a long time before it's ready for usage in production.*
 
+* Simple echo bot
+Let's see what we need to do to make a simple echo bot that does two things:
+1. If it receives a ~/start~ command responds with a preset message "This is a start command".
+2. If it receives any other text message it echoes it back at the sender.
+
+#+begin_src clojure
+  (ns my-bot
+    (:require [telegram.core :as t]
+              [telegram.bot.dispatcher :as t.dispatcher]
+              [telegram.updates :as t.u]))
+
+  (def config (t/from-token "MY_BOT_TOKEN"))
+
+  (defmethod t.dispatcher/command "/start" [upd ctx]
+    {:reply-text {:text "Start command"}})
+
+  (defmethod t.dispatcher/text :default [upd ctx]
+    {:reply-text {:text (t.u/message-text? upd)}})
+
+  (def dispatcher (t.dispatcher/make-dispatcher config))
+
+  (def updater (t/start-polling config dispatcher))
+
+  (comment
+    (t/stop-polling updater))
+#+end_src
+
+Note that handlers are registered using multimethods and they have to return a telegram response map with keys like ~:sent-text~, ~:reply-text~ etc. This means that user facing code is mostly data, which makes it very easily testable.
 
 * Usage
 First you need to produce your telegram map. There are many ways to do that, the simplest one is based on providing token as plain text:
 
 #+begin_src clojure
-  (require '[telegram.bot.core :as bot])
+  (require '[telegram.core :as t])
 
-  (def telegram (bot/from-token "YOUR_TOKEN"))
+  (def telegram (t/from-token "YOUR_TOKEN"))
 #+end_src
 
 However this is the least recommended way, as it's very insecure — you have to pass your token around the code base, and that's always a bad idea with secrets. Instead there's a bunch of helper functions to get the token from all kinds of places of varying security:
@@ -23,7 +51,7 @@ However this is the least recommended way, as it's very insecure — you have to
 Very popular and useful if deploying to services like Heroku. Set an environment variable ~BOT_TOKEN~ to use it:
 
 #+begin_src clojure
-  (def telegram (bot/from-env))
+  (def telegram (t/from-env))
 #+end_src
 
 ** Password managers
@@ -33,13 +61,13 @@ Another way is to get your token from password and secrets managers. Two are sup
 Normally you would use pass from command line like this:
 
 #+begin_src bash
-  pass my-bot/token
+  pass my-t/token
 #+end_src
 
 So for example above the usage would be:
 
 #+begin_src clojure
-  (def telegram (bot/from-pass "my-bot/token"))
+  (def telegram (t/from-pass "my-t/token"))
 #+end_src
 
 *** 1Password
@@ -52,7 +80,7 @@ For 1Password CLI you need to provide an item name or ID (better) and field name
 So the corresponding code is:
 
 #+begin_src clojure
-  (def telegram (bot/from-op "ITEM_ID" "FIELD_NAME"))
+  (def telegram (t/from-op "ITEM_ID" "FIELD_NAME"))
 #+end_src
 
 ** Arbitrary function
@@ -63,5 +91,5 @@ You can also initiate the config by passing an arbitrary function that takes no 
     ;; some magical code that gets the token
     )
 
-  (def telegram (bot/from-fn my-token-getter))
+  (def telegram (t/from-fn my-token-getter))
 #+end_src
