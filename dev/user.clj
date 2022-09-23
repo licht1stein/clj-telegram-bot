@@ -7,9 +7,10 @@
 (def config (tg/from-pass "telegram/aristarhbot"))
 
 (defmethod tg.dispatcher/command "/start" [upd ctx]
-  (println upd))
+  {:reply-text {:text "Start command"}})
 
 (comment
   (tg.api/delete-webhook config)
-  (def updater (tg/start-polling config tg.dispatcher/dispatch))
+  (def dispatcher (tg.dispatcher/make-dispatcher config))
+  (def updater (tg/start-polling config dispatcher))
   (tg/stop-polling updater))

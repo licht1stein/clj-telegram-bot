@@ -1,5 +1,6 @@
 (ns telegram.bot.dispatcher
-  (:require [clojure.string :as str]))
+  (:require [clojure.string :as str]
+            [telegram.api.core :as api]))
 
 (def *ctx (atom {}))
 
@@ -50,3 +51,16 @@
 (defmethod dispatch :text [upd ctx]
   (text upd ctx))
 
+(defn process-actions [config upd ctx actions]
+  (when-let [send (:send-text actions)]
+    (api/send-message config (:chat-id send) (:text send)))
+
+  (when-let [reply (:reply-text actions)]
+    (api/send-message config (-> upd :message :chat-id) (:text reply))))
+
+(defn make-dispatcher [config]
+  (let [dispatcher
+        (fn [upd ctx]
+          (let [actions #p (dispatch upd ctx)]
+            (process-actions config upd ctx actions)))]
+    dispatcher))

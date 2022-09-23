@@ -42,17 +42,16 @@
   (let [flag (atom true)]
     (go-loop [last-update-id nil]
       (when @flag
-        (println "polling")
         (let [updates (api/get-updates
                        config
-                       #p (cond-> {}
+                       (cond-> {}
                          (some? last-update-id) (assoc :offset last-update-id)))]
           (doseq [upd updates]
             (go (dispatcher upd {})))
-          (<! (timeout 5000))
-          (recur #p (if (seq updates)
-                      (-> updates last :update-id inc)
-                      last-update-id) ))))
+          (<! (timeout 1000))
+          (recur (if (seq updates)
+                   (-> updates last :update-id inc)
+                   last-update-id) ))))
     flag))
 
 (defn stop-polling [updater]
