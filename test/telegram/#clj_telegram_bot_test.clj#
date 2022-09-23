@@ -1,0 +1,18 @@
+(ns telegram.test-dispatcher
+  (:require [clojure.test :refer :all]))
+
+
+(defn anonymize-update [update]
+  (let [fname "Firstname"
+        lname "Lastname"
+        uname "username"
+        id 123456
+        anonymizer {:message {:from {:id id
+                                     :first-name fname
+                                     :last-name lname}}
+                    :chat {:id id
+                           :first-name fname
+                           :last-name lname
+                           :username uname}}]
+    (merge update anonymizer)))
+

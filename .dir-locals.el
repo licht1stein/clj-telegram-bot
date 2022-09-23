@@ -1,1 +1,1 @@
-((clojure-mode . ((setenv "BOT_TOKEN" (password-store-get "telegram/aristarhbot")))))
+((clojure-mode . ((setenv "BOT__TOKEN" (password-store-get "telegram/aristarhbot")))))

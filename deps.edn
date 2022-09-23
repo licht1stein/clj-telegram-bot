@@ -6,11 +6,14 @@
         cheshire/cheshire {:mvn/version "5.11.0"}
         com.taoensso/timbre {:mvn/version "5.2.1"}
         metosin/reitit {:mvn/version "0.5.18"}
-        integrant/integrant {:mvn/version "0.8.0"}}
+        integrant/integrant {:mvn/version "0.8.0"}
+        cprop/cprop {:mvn/version "0.1.19"}
+        camel-snake-kebab/camel-snake-kebab {:mvn/version "0.4.3"}}
  :aliases
  {:dev {:extra-paths ["dev"]
-        :extra-deps {com.chpill/ngrok {:mvn/version "0.1.0"}}}
-  :run-m {:main-opts ["-m" "clj-telegram-bot.clj-telegram-bot"]}
+        :extra-deps {integrant/repl {:mvn/version "0.3.2"}
+                     hashp/hashp {:mvn/version "0.2.1"}}}
+  :run-m {:main-opts ["-m" "telegram.core"]}
   :run-x {:ns-default telegram.core
           :exec-fn greet
           :exec-args {:name "Clojure"}}

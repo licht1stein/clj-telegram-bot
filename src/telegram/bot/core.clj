@@ -1,8 +1,12 @@
 (ns telegram.bot.core
   (:require [clojure.string :as str]
             [clojure.java.io :as io]
+            [clojure.string :as str]
+            [clojure.java.shell :as shell]
             [org.httpkit.client :as http]
-            [cheshire.core :as json]))
+            [cheshire.core :as json]
+            [taoensso.timbre :as timbre]
+            [integrant.core :as ig]))
 
 (def default-data {:user-agent "clj-telegram-bot"
                    :timeout 300000
@@ -11,12 +15,30 @@
 (defn from-token
   "Create a map of telegram params using token and check that it works."
   [token & {:keys [] :as opts}]
+  (assert (seq token) "No token provided or token is empty.")
   (merge default-data {:token token} opts))
 
-(defn from-environment
+(defn from-env
   "Create a map of telegram params using env var BOT_TOKEN and check that it works."
   [& {:keys [] :as opts}]
   (from-token (System/getenv "BOT_TOKEN") opts))
+
+(defn from-fn
+  "Create a map of telegram params by providing a function that returns a bot token"
+  [token-fn & {:keys [] :as opts}]
+  (from-token (token-fn) opts))
+
+(defn from-pass
+  "Get token from `pass` secrets manager."
+  [key]
+  (from-token (-> (shell/sh "pass" key) :out str/trim)))
+
+(defn from-op
+  "Get token from 1Password CLI."
+  [item field]
+  (-> (shell/sh "op" "item" "get" item "--fields" field)
+      :out
+      (str/trim)))
 
 (defn filter-params
   "Filter out nil values from a map."
@@ -159,6 +181,10 @@
                  :allow_sending_without_reply allow-sending-without-reply
                  :reply_markup reply-markup})))
 
+(defn reply-text [config msg text & {:keys [] :as opts}]
+  (let [chat-id (-> msg :chat :id)]
+    (send-message config chat-id text opts)))
+
 (defn get-me
   "https://core.telegram.org/bots/api#getme"
   [config]
@@ -260,24 +286,8 @@
 (defn set-webhook [config url & {:keys [secret-token drop-pending?]}]
   (api-request config :setWebhook :post {:url url :secret_token secret-token :drop_pending_updates (boolean drop-pending?)}))
 
-(comment
-  (def telegram (from-environment))
-  (delete-webhook telegram)
+(defmethod ig/init-key :systems/bot
+  [_ {:keys [systems/config]}]
+  (timbre/debug ::bot :systems/bot :init)
+  (from-token (-> config :bot :token)))
 
-  (get-me telegram)
-
-  (get-updates telegram {:timeout 10})
-
-  (delete-webhook telegram :drop-pending? true)
-  (set-webhook telegram "https://0ec27329b3d4.ngrok.io/telegram/update" :drop-pending? true)
-
-  (ban-user telegram -721166690 223429441 {:unix-until 0})
-
-  (send-message telegram 22039771 "hello!")
-  (send-message telegram 22039771 "hello!"
-                {:reply-markup
-                 {:inline_keyboard
-                  [[{:text "a"
-                     :callback_data 1}
-                    {:text "b"
-                     :callback_data 2}]]}}))
