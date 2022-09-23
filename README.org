@@ -1,0 +1,53 @@
+#+TITLE: Clojure Telegram Bot
+
+This library is inspired by the excellent [python-telegram-bot](https://python-telegram-bot.org/) library. Making bots with python-telegram-bot is a pleasure and a breeze. However, doing the same with Clojure should be even easier. 
+
+That's the goal.
+
+
+* Usage
+First you need to produce your telegram map. There are many ways to do that, the simplest one is based on providing token as plain text:
+
+#+begin_src clojure
+  (require '[telegram.bot.core :as bot])
+
+  (def telegram (bot/from-token "YOUR_TOKEN"))
+#+end_src
+
+However this is the least recommended way, as it's very insecure — you have to pass your token around the code base, and that's always a bad idea with secrets. Instead there's a bunch of helper functions to get the token from all kinds of places of varying security:
+
+** Environment variables
+Very popular and useful if deploying to services like Heroku. Set an environment variable ~BOT_TOKEN~ to use it:
+
+#+begin_src clojure
+  (def telegram (bot/from-env))
+#+end_src
+
+** Password managers
+Another way is to get your token from password and secrets managers. Two are supported out of the box: [[https://www.passwordstore.org/][pass]] and [[https://developer.1password.com/docs/cli/][1Password CLI]].
+
+*** pass
+Normally you would use pass from command line like this:
+
+#+begin_src bash
+  pass my-bot/token
+#+end_src
+
+So for example above the usage would be:
+
+#+begin_src clojure
+  (def telegram (bot/from-pass "my-bot/token"))
+#+end_src
+
+*** 1Password
+For 1Password CLI you need to provide an item name or ID (better) and field name where the token is stored. So if you have a 1Password item called ~my-bot~ and a field called ~token~, your CLI command would be:
+
+#+begin_src bash
+  op item get "ITEM_ID" --fields "FIELD_NAME"
+#+end_src
+
+So the corresponding code is:
+
+#+begin_src clojure
+  (def telegram (bot/from-op "ITEM_ID" "FIELD_NAME"))
+#+end_src
