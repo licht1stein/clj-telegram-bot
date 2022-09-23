@@ -4,6 +4,9 @@ This library is inspired by the excellent [[https://python-telegram-bot.org/][py
 
 That's the goal.
 
+* Warning!
+*This library is at it's first development stages. It will be a long time before it's ready for usage in production.*
+
 
 * Usage
 First you need to produce your telegram map. There are many ways to do that, the simplest one is based on providing token as plain text:
