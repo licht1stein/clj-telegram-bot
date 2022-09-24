@@ -4,33 +4,6 @@
             [telegram.responses :as r]
             [telegram.api.core :as api]))
 
-(def *ctx (atom {}))
-
-(defn- message-type [upd]
-  (-> upd
-      :message
-      :entities
-      first
-      :type))
-
-(defn command? [upd]
-  (when (= (message-type upd) "bot_command")
-    (-> upd
-        u/message-text?
-        (str/split #" ")
-        first)))
-
-(defn callback-query? [upd]
-  (-> upd
-      :callback-query))
-
-
-(defn update-type [upd]
-  (cond (command? upd) :command
-        (u/message-text? upd) :text
-        (callback-query? upd) :callback-query
-        :else :unrecognized))
-
 
 (defmulti command (fn [upd _] (command? upd)))
 
@@ -48,14 +21,32 @@
 (defmethod dispatch :text [upd ctx]
   (text upd ctx))
 
-(defn process-actions [config upd ctx actions]
+(defn process-actions [upd ctx actions]
   (when-let [send (:send-text actions)]
-    (api/send-message config (:chat-id send) (:text send)))
+    (api/send-message (:bot ctx) (:chat-id send) (:text send)))
   
   (when-let [reply (:reply-text actions)]
-    (api/send-message config (-> #p upd :message :chat :id) (:text reply))))
+    (api/send-message (:bot ctx) (-> #p upd :message :chat :id) (:text reply))))
 
 (comment
+  ;; Handler map is composed of keys depending on the type of update to process.
+  ;; For convenience we separate :command from :text, although if you wanted you could handle
+  ;; all commands using :text handlers and regex.
+  ;;
+  ;; Following types of handlers are supported:
+  ;; - :command
+  ;; - :text
+  ;; - :callback-query
+  ;; - :inline-query
+  ;; - :conversation
+  ;; - :any
+  ;;
+  ;; Conversation is a special type of handler. Once user initiates a conversation, all handlers except the handlers
+  ;; in the conversation will be ignored. To exit this state user either needs to complete the conversation (a handler
+  ;; must return {:conversation :end} or you need to provide a fallback handler within the conversation map.
+  ;;
+  ;; See example user registration to understand it better.
+
   (def handlers
     {:command {"/start" (fn [upd ctx]
                           {:reply-text {:text "Start command"}})
@@ -66,11 +57,15 @@
                }
 
      :text {:default (fn [upd ctx]
-                       {:reply-text {:text (u/message-text? upd)}})}}))
+                       {:reply-text {:text (u/message-text? upd)}})}})
 
-(make-command-predicates (:command handlers))
+  (make-predicates (:command handlers))
+  (make-predicates (:text handlers)))
 
-(defn make-command-predicates [handlers]
+
+(defn- make-predicates
+  "Take a handlers map and produce predicate maps for each type of handlers."
+  [handlers]
   (for [h handlers]
     {:pred (cond
              #p (= #p (first h) :default) (constantly true)
@@ -87,9 +82,9 @@
 
 ;; TODO: add middleware
 
-(defn make-dispatcher [config handlers & {:keys [middleware]}]
+(defn make-dispatcher [ctx handlers & {:keys [middleware]}]
   (let [dispatcher
         (fn [upd]
-          (let [actions (dispatch upd @*ctx)]
-            (process-actions config upd @*ctx actions)))]
+          (let [actions (dispatch upd ctx)]
+            (process-actions upd (assoc ctx :db @(:db ctx)) actions)))]
     dispatcher))

@@ -1,8 +1,6 @@
 (ns telegram.server.core
   (:require [org.httpkit.server :as server]
             [clojure.java.io :as io]
-            [taoensso.timbre :as timbre]
-            [integrant.core :as ig]
             [cheshire.core :as json]
             [reitit.ring :as ring]
             [camel-snake-kebab.core :as csk])
@@ -15,22 +13,25 @@
       first
       :type))
 
-(def secret-token (str (random-uuid)))
+(defn request->update [request]
+  (-> request
+      :body
+      io/reader
+      slurp
+      (json/parse-string csk/->kebab-case-keyword)))
+
+
+(defn update-handler [request]
+  (let [body (request->update request)]
+    (dispatcher body))
+  {:status 201})
+
 (defn make-handler [dispatcher]
   (assert fn? dispatcher)
   (ring/ring-handler
    (ring/router
     [["/telegram/update"
-      {:post (fn [request]
-               (timbre/info ::update-received)
-               (let [body (-> request
-                              :body
-                              io/reader
-                              slurp
-                              (json/parse-string csk/->kebab-case-keyword))]
-                 (dispatcher body)
-                 )
-               {:status 201})}]])))
+      {:post (make-)}]])))
 
 
 (defn stop-server [server]
@@ -54,11 +55,5 @@
   [_ {:keys [systems/config systems/dispatcher]}]
   (timbre/debug ::server :systems/server :init)
   (let [handler (make-handler dispatcher)]
-
     (start-server (-> config :port) handler)))
-
-(defmethod ig/halt-key! :systems/server
-  [_ server]
-  (timbre/debug ::server :systems/halt {:server server})
-  (stop-server server))
 

@@ -6,15 +6,17 @@
   (:gen-class))
 
 (def ^{:private true} default-data
-  {:user-agent "clj-telegram-bot"
-   :timeout 300000
-   :keepalive 300000})
+  {:bot {:user-agent "clj-telegram-bot"
+         :timeout 300000
+         :keepalive 300000}})
 
 (defn from-token
   "Create a map of telegram params using token and check that it works."
   [token & {:keys [] :as opts}]
   (assert (seq token) "No token provided or token is empty.")
-  (merge default-data {:token token} opts))
+  (-> (merge default-data opts)
+      (assoc-in [:bot :token] token)
+      (assoc :db (atom {:user {} :chat {} :bot {}}))))
 
 (defn from-env
   "Create a map of telegram params using env var BOT_TOKEN and check that it works."
@@ -28,22 +30,28 @@
 
 (defn from-pass
   "Get token from `pass` secrets manager."
-  [key]
-  (from-token (-> (shell/sh "pass" key) :out str/trim)))
+  [key & {:keys [] :as opts}]
+  (from-token (-> (shell/sh "pass" key) :out str/trim) opts))
 
 (defn from-op
   "Get token from 1Password CLI."
-  [item field]
+  [item field & {:keys [] :as opts}]
   (-> (shell/sh "op" "item" "get" item "--fields" field)
       :out
-      (str/trim)))
+      (str/trim)
+      (from-token opts)))
 
-(defn start-polling [config dispatcher]
+(defn start-polling
+  "Start long polling telegram bot API for updates.
+  Any incoming updates will be asynchronously processed with dispatcher.
+
+  Returns a boolean atom. Reset it to nil using `stop-polling` to, well, stop polling."
+  [ctx dispatcher]
   (let [flag (atom true)]
     (go-loop [last-update-id nil]
       (when @flag
         (let [updates (api/get-updates
-                       config
+                       (:bot ctx)
                        (cond-> {}
                          (some? last-update-id) (assoc :offset last-update-id)))]
           (doseq [upd updates]
