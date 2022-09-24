@@ -12,9 +12,19 @@
         :task (do
                 (println "Running tests")
                 (shell "clj -M:test --fail-fast"))}
+
+  lint {:doc "Lint with eastwood"
+        :taks (do (shell "clojure -M:eastwood"))}
   jar {:doc "Build uberjar"
        :requires ([version])
        :task (let [version (version/get-version)]
                (run 'clean)
                (run 'test)
-               (shell (format "clj -T:build jar '{:version \"%s\"}'" version)))}}}
+               (println "Building uberjar version" version)
+               (shell (format "clj -T:build jar '{:version \"%s\"}'" version)))}
+
+  deploy {:doc "Deploy to clojars"
+          :requires ([version])
+          :task (let [version (version/get-version)]
+                  (println "Deploying to clojars" version)
+                  (shell (format "clj -T:build deploy '{:version \"%s\"}'" version)))}}}

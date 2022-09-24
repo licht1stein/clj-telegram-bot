@@ -9,12 +9,16 @@
  {:dev {:extra-paths ["dev" "test"]
         :extra-deps {hashp/hashp {:mvn/version "0.2.1"}
                      lambdaisland/kaocha {:mvn/version "1.70.1086"}}}
-  :build {:deps {io.github.seancorfield/build-clj
-                 {:git/tag "v0.6.3" :git/sha "9b8e09b"
-                  ;; since we're building an app uberjar, we do not
-                  ;; need deps-deploy for clojars.org deployment:
-                  :deps/root "slim"}}
+  :build {:deps {io.github.seancorfield/build-clj {:git/tag "v0.8.3" :git/sha "7ac1f8d"}
+                 jonase/eastwood {:mvn/version "1.3.0"}}
           :ns-default build}
+  :eastwood
+    {:main-opts ["-m"
+                 "eastwood.lint"
+                 ;; Any Eastwood options can be passed here as edn:
+                 {}]
+     :extra-deps {jonase/eastwood {:mvn/version "1.3.0"}}}
+  
   :test {:extra-paths ["test"]
          :extra-deps {lambdaisland/kaocha {:mvn/version "1.70.1086"}}
          :main-opts ["-m" "kaocha.runner"]}

@@ -7,6 +7,8 @@ That's the goal.
 * Warning!
 *This library is at it's first development stages. It will be a long time before it's ready for usage in production.*
 
+Do not use this library yet. If you want to stay informed about a production-ready release, subscribe to our [[https://t.me/clj_telegram_bot][Telegram channel]].
+
 * Simple echo bot
 Let's see what we need to do to make a simple echo bot that does two things:
 1. If it receives a ~/start~ command responds with a preset message "This is a start command".

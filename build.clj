@@ -5,7 +5,7 @@
 
 
 
-(def lib 'net.clojars.clj-telegram-bot/clj-telegram-bot)
+(def lib 'io.github.licht1stein/clj-telegram-bot)
 (def main 'telegram.core)
 
 (defn test "Run the tests." [opts]
@@ -13,5 +13,10 @@
 
 (defn jar "Build uberjar" [& {:keys [version] :as opts}]
   (-> opts
-      (assoc :lib lib :version (:version opts) :main main)
+      (assoc :lib lib :version version :main main)
       (bb/uber)))
+
+(defn deploy "Deploy the JAR to Clojars." [{:keys [version] :as opts}]
+  (-> opts
+      (assoc :lib lib :version version)
+      (bb/deploy)))
