@@ -1,1 +1,14 @@
-{:deps {com.lambdaisland/launchpad {:mvn/version "RELEASE"}}}
+{:paths ["scripts"]
+ :deps {}
+ :tasks
+ {version {:doc "See our bump version"
+           :requires ([version])
+           :task version/version}
+  clean {:doc "Clean target dir"
+         :task (do
+                 (println "Removing target/")
+                 (shell "rm -rf target"))}
+  jar {:doc "Build uberjar"
+       :requires ([version])
+       :task (let [version (version/get-version)]
+               (shell (format "clj -T:build ci '{:version \"%s\"}'" version)))}}}

@@ -20,8 +20,8 @@
 
 (defn from-env
   "Create a map of telegram params using env var BOT_TOKEN and check that it works."
-  [& {:keys [] :as opts}]
-  (from-token (System/getenv "BOT_TOKEN") opts))
+  [var & {:keys [] :as opts}]
+  (from-token (System/getenv (or var "BOT_TOKEN")) opts))
 
 (defn from-fn
   "Create a map of telegram params by providing a function that returns a bot token"
@@ -62,5 +62,7 @@
                    last-update-id) ))))
     flag))
 
-(defn stop-polling [updater]
+(defn stop-polling
+  "Reset updater atom to nil. This stops polling."
+  [updater]
   (reset! updater nil))
