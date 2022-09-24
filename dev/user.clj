@@ -2,6 +2,7 @@
   (:require [hashp.core]
             [telegram.core :as t]
             [telegram.bot.dispatcher :as t.d]
+            [telegram.updates :as t.u]
             [telegram.responses :as t.r]))
 
 ;; TODO: add example bots with deps.edn
@@ -16,7 +17,7 @@
   {:command {#"/start" (fn [upd ctx]
                          {:reply-text {:text "Start command"}})}
    :text {:default (fn [upd ctx]
-                     {:reply-text {:text (t.r/message-text? upd)}})}})
+                     {:reply-text {:text (t.u/message-text? upd)}})}})
 
 (comment
   (def dispatcher (t.d/make-dispatcher *ctx handlers))

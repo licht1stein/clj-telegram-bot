@@ -8,7 +8,13 @@
          :task (do
                  (println "Removing target/")
                  (shell "rm -rf target"))}
+  test {:doc "Run tests"
+        :task (do
+                (println "Running tests")
+                (shell "clj -M:test --fail-fast"))}
   jar {:doc "Build uberjar"
        :requires ([version])
        :task (let [version (version/get-version)]
-               (shell (format "clj -T:build ci '{:version \"%s\"}'" version)))}}}
+               (run 'clean)
+               (run 'test)
+               (shell (format "clj -T:build jar '{:version \"%s\"}'" version)))}}}

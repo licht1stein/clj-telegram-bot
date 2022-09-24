@@ -5,7 +5,7 @@
             [telegram.api.core :as api]))
 
 
-(defmulti command (fn [upd _] (command? upd)))
+(defmulti command (fn [upd _] (u/command? upd)))
 
 (defmethod command :default [upd ctx])
 
@@ -13,7 +13,7 @@
 
 (defmethod text :default [upd ctx])
 
-(defmulti dispatch (fn [upd _] (update-type upd)))
+(defmulti dispatch (fn [upd _] (u/update-type upd)))
 
 (defmethod dispatch :command [upd ctx]
   (command upd ctx))
