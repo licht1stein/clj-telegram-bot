@@ -1,0 +1,16 @@
+#+TITLE: Dev Notes
+
+* Development Tasks
+** TODO Dispatcher
+- Text
+- Commands
+- Inline button clicks
+- Inline queries
+
+** TODO Middleware
+*** TODO Update middleware
+- Examples of auth middleware (fn that receives telegram id and returns a user map)
+
+** TODO Updater
+- Extract the ring handler for usage with other server libs
+- Add secure header to webhooks
