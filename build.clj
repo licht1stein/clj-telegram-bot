@@ -18,5 +18,5 @@
 
 (defn deploy "Deploy the JAR to Clojars." [{:keys [version] :as opts}]
   (-> opts
-      (assoc :lib lib :version version)
+      (assoc :lib lib :version version :main main)
       (bb/deploy)))
