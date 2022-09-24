@@ -5,7 +5,7 @@
 
 
 
-(def lib 'io.github.licht1stein/clj-telegram-bot)
+(def lib 'com.github.licht1stein/clj-telegram-bot)
 (def main 'telegram.core)
 
 (defn test "Run the tests." [opts]
