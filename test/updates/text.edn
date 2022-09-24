@@ -1,8 +1,0 @@
-{:update-id 328538991,
- :message
- {:from {:id 123456, :first-name "Firstname", :last-name "Lastname"}},
- :chat
- {:id 123456,
-  :first-name "Firstname",
-  :last-name "Lastname",
-  :username "username"}}

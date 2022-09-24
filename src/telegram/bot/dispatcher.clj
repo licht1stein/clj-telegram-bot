@@ -54,7 +54,39 @@
   (when-let [reply (:reply-text actions)]
     (api/send-message config (-> #p upd :message :chat :id) (:text reply))))
 
-(defn make-dispatcher [config]
+(comment
+  (def handlers
+    {:command {"/start" (fn [upd ctx]
+                          {:reply-text {:text "Start command"}})
+
+               #"/foo_\d+" {:reply-text {:text "Command /foo_NUM"}}
+
+               :default (u/reply-text "Unknown command")}
+
+     :text {:default (fn [upd ctx]
+                       {:reply-text {:text (u/message-text? upd)}})}}))
+
+
+
+(defn make-command-predicates [handlers ]
+  (for [h handlers]
+    {:pred (cond
+             (= (type (first h)) java.util.regex.Pattern) #(re-matches (first h) %)
+             (= (type (first h)) java.lang.String) #(= (first h) %)
+             (fn? (first h)) (first h)
+             (= (first h) :default) (repeatedly true)
+             :else (throw (ex-info "No command handlers provided" {:handlers handlers}))
+             )
+     :handler (cond
+                (map? (last h)) (fn [upd ctx] (last h))
+                (fn? (last h)) (last h)
+                :else (throw (ex-info "Handler can either be an action map or a function." {:handler (last h)})))}))
+
+(make-command-predicates (:command handlers))
+
+;; TODO: add middleware
+
+(defn make-dispatcher [config handlers & {:keys [middleware]}]
   (let [dispatcher
         (fn [upd]
           (let [actions (dispatch upd @*ctx)]
