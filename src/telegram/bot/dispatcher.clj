@@ -1,6 +1,7 @@
 (ns telegram.bot.dispatcher
   (:require [clojure.string :as str]
             [telegram.updates :as u]
+            [telegram.responses :as r]
             [telegram.api.core :as api]))
 
 (def *ctx (atom {}))
@@ -59,30 +60,30 @@
     {:command {"/start" (fn [upd ctx]
                           {:reply-text {:text "Start command"}})
 
-               #"/foo_\d+" {:reply-text {:text "Command /foo_NUM"}}
+               #"/foo_\d+" (r/reply-text "Command /foo_NUM")
 
-               :default (u/reply-text "Unknown command")}
+               :default (r/reply-text "Unknown command")
+               }
 
      :text {:default (fn [upd ctx]
                        {:reply-text {:text (u/message-text? upd)}})}}))
 
+(make-command-predicates (:command handlers))
 
-
-(defn make-command-predicates [handlers ]
+(defn make-command-predicates [handlers]
   (for [h handlers]
     {:pred (cond
+             #p (= #p (first h) :default) (constantly true)
              (= (type (first h)) java.util.regex.Pattern) #(re-matches (first h) %)
              (= (type (first h)) java.lang.String) #(= (first h) %)
              (fn? (first h)) (first h)
-             (= (first h) :default) (repeatedly true)
+             (keyword? (first h)) (throw (ex-info "Only :default key allowed as handler key" {:key (first h)}))
              :else (throw (ex-info "No command handlers provided" {:handlers handlers}))
              )
      :handler (cond
                 (map? (last h)) (fn [upd ctx] (last h))
                 (fn? (last h)) (last h)
                 :else (throw (ex-info "Handler can either be an action map or a function." {:handler (last h)})))}))
-
-(make-command-predicates (:command handlers))
 
 ;; TODO: add middleware
 
