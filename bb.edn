@@ -8,6 +8,12 @@
          :task (do
                  (println "Removing target/")
                  (shell "rm -rf target"))}
+
+  clean-tmp {:doc "Clean temp dir"
+             :task (do (println "Removing tmp/")
+                       (shell "rm -rf tmp")
+                       (println "Creating new tmp/")
+                       (shell "mkdir tmp"))}
   test {:doc "Run tests"
         :task (do
                 (println "Running tests")

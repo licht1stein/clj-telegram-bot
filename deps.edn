@@ -4,11 +4,15 @@
         cheshire/cheshire {:mvn/version "5.11.0"}
         metosin/reitit {:mvn/version "0.5.18"}
         camel-snake-kebab/camel-snake-kebab {:mvn/version "0.4.3"}
-        org.clojure/core.async {:mvn/version "1.5.648"}}
+        org.clojure/core.async {:mvn/version "1.5.648"}
+        metosin/malli {:mvn/version "0.8.9"}}
  :aliases
  {:dev {:extra-paths ["dev" "test"]
         :extra-deps {hashp/hashp {:mvn/version "0.2.1"}
-                     lambdaisland/kaocha {:mvn/version "1.70.1086"}}}
+                     lambdaisland/kaocha {:mvn/version "1.70.1086"}
+                     tick/tick {:mvn/version "0.5.0"}
+                     mvxcvi/puget {:mvn/version "1.3.2"}
+                     com.github.seancorfield/expectations {:mvn/version "2.0.160"}}}
   :build {:deps {io.github.seancorfield/build-clj {:git/tag "v0.8.3" :git/sha "7ac1f8d"}
                  jonase/eastwood {:mvn/version "1.3.0"}}
           :ns-default build}
@@ -20,6 +24,8 @@
      :extra-deps {jonase/eastwood {:mvn/version "1.3.0"}}}
   
   :test {:extra-paths ["test"]
-         :extra-deps {lambdaisland/kaocha {:mvn/version "1.70.1086"}}
+         :extra-deps {lambdaisland/kaocha {:mvn/version "1.70.1086"}
+                      expectations/expectations {:mvn/version "2.1.10"}
+                      com.github.seancorfield/expectations {:mvn/version "2.0.160"}}
          :main-opts ["-m" "kaocha.runner"]}
   }}

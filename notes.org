@@ -7,6 +7,10 @@
 - Inline button clicks
 - Inline queries
 
+*** Conversations
+- Try stateless conversations (probably not possible, but maybe for simple decision trees)
+- Implement stateful ones
+
 ** TODO Middleware
 *** TODO Update middleware
 - Examples of auth middleware (fn that receives telegram id and returns a user map)
@@ -14,3 +18,17 @@
 ** TODO Updater
 - Extract the ring handler for usage with other server libs
 - Add secure header to webhooks
+
+** Examples
+- Echo bot
+- Simple command handler bot
+- Bot with user identification (different levels of access)
+- New users moderator for groups
+
+** Deploy instructions
+- Heroku
+- EC2
+- Lambda (expose a single dispatcher function)
+
+** Persistence
+- Persist state between restarts

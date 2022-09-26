@@ -26,7 +26,7 @@
     (api/send-message (:bot ctx) (:chat-id send) (:text send)))
   
   (when-let [reply (:reply-text actions)]
-    (api/send-message (:bot ctx) (-> #p upd :message :chat :id) (:text reply))))
+    (api/send-message (:bot ctx) (-> upd u/from :id) (:text reply))))
 
 (comment
   ;; Handler map is composed of keys depending on the type of update to process.
@@ -82,9 +82,9 @@
 
 ;; TODO: add middleware
 
-(defn make-dispatcher [ctx handlers & {:keys [middleware]}]
+(defn make-dispatcher [ctx handlers & {:keys [update-middleware response-middleware]}]
   (let [dispatcher
         (fn [upd]
-          (let [actions (dispatch upd ctx)]
+          (let [actions (dispatch ((apply comp update-middleware) upd) ctx)]
             (process-actions upd (assoc ctx :db @(:db ctx)) actions)))]
     dispatcher))
