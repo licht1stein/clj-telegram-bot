@@ -1,6 +1,6 @@
 (ns telegram.updates
   (:require [clojure.string :as str]))
-
+n
 (defn message-text?
   "Extract message text from an update if any. Otherwise return nil."
   [upd]
