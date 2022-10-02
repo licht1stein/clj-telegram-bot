@@ -1,0 +1,3 @@
+#+TITLE: clj-telegram-bot examples
+
+This is a separate Clojure deps project to be used for testing bot examples.
