@@ -24,6 +24,7 @@ That's the goal.
     - [[#filter][:filter]]
     - [[#actions][:actions]]
   - [[#optional-keys][Optional keys]]
+    - [[#user][:user]]
     - [[#passthrough][:passthrough]]
     - [[#doc][:doc]]
 - [[#middleware][Middleware]]
@@ -157,6 +158,11 @@ Action can also be a ~(fn [upd ctx])~ function, that either produces a action ma
 You can provide multiple actions for a single handler to allow triggering multiple actions by a single update.
 
 ** Optional keys
+*** :user
+Additional filter that check the :ctb/user map produced by auth middleware, to see if the current user has the right to access this handler.
+
+For a complete example see [[./examples/rights_checker_command_bot.clj][examples/rights_checker_command_bot.clj]]
+
 *** :passthrough
 If set to ~true~ it will tell the dispatcher to continue applying handlers even if this one was a match. This gives you a simple mechanism to apply multiple handlers to a single update without cluttering.
 
