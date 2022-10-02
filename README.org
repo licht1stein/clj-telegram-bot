@@ -118,7 +118,7 @@ The filter is a way for dispatcher to check if handler should be applied to this
 
 You can also provide a ~(fn [upd ctx])~ function as a filter to implement logic of any complexity.
 
-Dispatcher checks filters from first to last until it finds a match. It then applies this handler to the update and stops. If you want the dispatcher to continue looking for more matches after this handler's actions were applied, you can achieve this by setting ~:passtrough true~ in the handler.
+Dispatcher checks filters from first to last until it finds a match. It then applies this handler to the update and stops. If you want the dispatcher to continue looking for more matches after this handler's actions were applied, you can achieve this by setting ~:passthrough true~ in the handler.
 
 ** :actions
 Vector of actions to perform. In most cases an action is some sort of response, you can provide simplest actions as ~:reply-text~ or ~:send-text~ maps. These simplify working with simpler use cases and also lets you easily test your bot. Since both update and action are just maps, you can write unit tests to check if the action produces expected result given a certain update.
