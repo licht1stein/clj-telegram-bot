@@ -1,7 +1,7 @@
 #+TITLE: Clojure Telegram Bot
 Data driven Clojure bot library.
 
-* Warning!
+* Warning!n
 *This library is at it's first development stages. It will be some time before it's ready for usage in production.*
 
 *Do not use this library yet!* If you want to stay informed about a production-ready release, subscribe to our [[https://t.me/clj_telegram_bot][Telegram channel]]. I will change the public APIs many times before release.
@@ -13,7 +13,7 @@ This library is inspired by the excellent [[https://python-telegram-bot.org/][py
 That's the goal.
 
 * Table of contents                                                     :toc_4:
-- [[#warning][Warning!]]
+- [[#warningn][Warning!n]]
 - [[#motivation][Motivation]]
 - [[#examples][Examples]]
   - [[#pingpong-bot][Ping/pong bot]]
@@ -179,7 +179,7 @@ So middleware is any function that recieves ~upd~ and ~ctx~ and returns an ~upd~
 
 ** Example middleware
 *** Ping-Pong bot with middleware
-Source: [[./examples/ping_pong_middleware_bot.clj]]
+Source: [[./examples/ping_pong_middleware_bot.clj][examples/ping_pong_middleware_bot.clj]]
 
 Here's and example of a modified ping-pong bot that also logs and saves every incoming update:
 
