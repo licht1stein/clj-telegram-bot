@@ -1,4 +1,5 @@
 #+TITLE: Clojure Telegram Bot
+Data driven Clojure bot library.
 
 * Warning!
 *This library is at it's first development stages. It will be some time before it's ready for usage in production.*
