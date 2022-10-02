@@ -11,8 +11,11 @@ This library is inspired by the excellent [[https://python-telegram-bot.org/][py
 
 That's the goal.
 
-* Simple ping/pong bot
-Let's see what we need to do to make a simple ping/pong bot that answers "pong" to every "ping"
+* Examples
+I know you want examples first and explanations later, so there's an [[./examples][examples]] folder, where we'll put all the interesting usage examples. But to get you started here's a couple of popular ones:
+
+** Ping/pong bot
+A simple bot that answers "pong" if users sends him "ping". Not that the filter is a regex pattern, but it can also be just a simple string "ping", in this case the result is the same. Increase bot example below will show a better usage of regex.
 
 #+begin_src clojure
   (ns ping-pong-bot
@@ -34,8 +37,62 @@ Let's see what we need to do to make a simple ping/pong bot that answers "pong" 
     (t/stop-polling updater))
 #+end_src
 
+** Echo bot
+Classical example of a bot that responds with the same text user sent. Note the ~:any~ filter, it will return true to every message.
+
+#+begin_src clojure
+  (ns echo-bot
+    (:require[telegram.core :as t]
+             [telegram.updates :as t.u]   ; update helpers
+             [telegram.bot.dispatcher :as t.d]))
+
+  (def *ctx (t/from-token "YOUR_BOT_TOKEN"))
+
+  (def handlers
+    [{:type :message
+      :filter :any
+      :actions [(fn [upd ctx] {:reply-text {:text (t.u/message-text? upd)}})]}])
+
+  (def dispatcher (t.d/make-dispatcher *ctx handlers))
+  (def updater (t/start-polling *ctx dispatcher))
+
+  (comment
+    (t/stop-polling updater))
+#+end_src
+
+** Command bot
+Another classical example of a bot that responds to a command. This one responds to three commands: ~/start~ and ~/help~, as recommended by the official guide, as well as ~/fn_command~ to demonstrate a function based filter:
+
+#+begin_src clojure
+  (ns simple-command-bot
+    (:require[telegram.core :as t]
+             [telegram.updates :as t.u]   ; update helpers
+             [telegram.bot.dispatcher :as t.d]))
+
+  (def *ctx (t/from-token "YOUR_BOT_TOKEN"))
+
+  (def handlers
+    [{:type :command
+      :filter "/start"
+      :actions [{:reply-text {:text "You called the /start command"}}]}
+
+     {:type :command
+      :filter #"/help"
+      :actions [{:reply-text {:text "This bot does nothing useful"}}]}
+
+     {:type :command
+      :filter (fn [upd ctx] (= (t.u/message-text? upd) "/fn_command"))
+      :actions [{:reply-text {:text "Note that you can use functions for :filter and :actions for more complex filtering and action logic"}}]}])
+
+  (def dispatcher (t.d/make-dispatcher *ctx handlers))
+  (def updater (t/start-polling *ctx dispatcher))
+
+  (comment
+    (t/stop-polling updater))
+#+end_src
+
 * Usage
-First you need to produce your telegram map. There are many ways to do that, the simplest one is based on providing token as plain text:
+First you need to produce your telegram context map. There are many ways to do that, the simplest one is based on providing token as plain text:
 
 #+begin_src clojure
   (require '[telegram.core :as t])
