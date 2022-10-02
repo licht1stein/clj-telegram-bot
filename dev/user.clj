@@ -28,12 +28,13 @@
 
 (def handlers
   [{:type :message
-    :filter "ping"
-    :actions [{:reply-text {:text "pong"}}]}
+    :filter :any
+    :passthrough true
+    :actions [(fn [upd ctx] {:reply-text {:text (t.u/message-text? upd)}})]}
 
    {:type :message
-    :filter :any
-    :actions [(fn [upd ctx] {:reply-text {:text (t.u/message-text? upd)}})]}
+    :filter "ping"
+    :actions [{:reply-text {:text "pong"}}]}
 
    {:type :command
     :doc "Handles start command"

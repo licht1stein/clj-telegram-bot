@@ -11,36 +11,28 @@ This library is inspired by the excellent [[https://python-telegram-bot.org/][py
 
 That's the goal.
 
-* Simple echo bot
-Let's see what we need to do to make a simple echo bot that does two things:
-1. If it receives a ~/start~ command responds with a preset message "This is a start command".
-2. If it receives any other text message it echoes it back at the sender.
+* Simple ping/pong bot
+Let's see what we need to do to make a simple ping/pong bot that answers "pong" to every "ping"
 
 #+begin_src clojure
-  (ns my-bot
+  (ns ping-pong-bot
     (:require [telegram.core :as t]
-              [telegram.bot.dispatcher :as t.dispatcher]
-              [telegram.updates :as t.u]))
+              [telegram.bot.dispatcher :as t.d]))
 
-  (def config (t/from-token "MY_BOT_TOKEN"))
+  (def *ctx (t/from-token "YOUR_BOT_TOKEN"))
 
-  ;; Define a command handler
-  (defmethod t.dispatcher/command "/start" [upd ctx]
-    {:reply-text {:text "This is a start command"}})
+  (def handlers
+    [{:type :message
+      :filter #"ping"
+      :actions [{:reply-text {:text "pong"}}]}])
 
-  ;; Define a text handler for any non-specific text
-  (defmethod t.dispatcher/text :default [upd ctx]
-    {:reply-text {:text (t.u/message-text? upd)}})
-
-  (def dispatcher (t.dispatcher/make-dispatcher config))
-  (def updater (t/start-polling config dispatcher))
+  (def dispatcher (t.d/make-dispatcher *ctx handlers))
+  (def updater (t/start-polling *ctx dispatcher))
 
   (comment
     "Run this to stop long-polling updater"
     (t/stop-polling updater))
 #+end_src
-
-Note that handlers are registered using multimethods and they have to return a telegram response map with keys like ~:sent-text~, ~:reply-text~ etc. This means that user facing code is mostly data, which makes it very easily testable.
 
 * Usage
 First you need to produce your telegram map. There are many ways to do that, the simplest one is based on providing token as plain text:

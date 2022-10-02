@@ -373,19 +373,6 @@
     [:callback-game {:optional true} :CallbackGame]
     [:pay {:optional true} :boolean]]})
 
-(comment
-  (def sample-handlers
-    [{:type :command
-      :doc "Handles start command"
-      :filter #"/start"
-      :actions [{:reply-text {:text "/start command"}}]}
-
-     {:type :command
-      :doc "Get user profile by id."
-      :filter #"/user_(\d+)"
-      :actions [(fn [upd ctx] (println "This is a function"))]}
-     ]))
-
 (def HandlerRegistry
   {:ctb/handlers [:vector :ctb/handler]
 
