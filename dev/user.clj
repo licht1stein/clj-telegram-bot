@@ -7,6 +7,7 @@
             [telegram.bot.dispatcher :as t.d]
             [telegram.schema :as ts]
             [telegram.updates :as t.u]
+            [telegram.middleware.auth :as t.auth]
             [puget.printer :as puget]
             [telegram.responses :as t.r]))
 
@@ -55,12 +56,18 @@
   upd)
 
 (defn log-update-mw [upd]
-  (println "update")
-  ;; (let [ts (tick/format (tick/formatter "HH:mm:ss") (tick/date-time))]
-  ;;   (puget/pprint  upd print-opts))
+  (let [ts (tick/format (tick/formatter "HH:mm:ss") (tick/date-time))]
+    (puget/pprint  upd print-opts))
   upd)
 
+(def user-db {22039771 {:user "Owner"
+                        :admin? true}})
+(defn user-auth [telegram-id]
+  (user-db telegram-id))
+
+(def auth-middleware (t.auth/make-auth-middleware user-auth))
+
 (comment
-  (def dispatcher (t.d/make-dispatcher *ctx handlers :update-middleware [save-update-mw log-update-mw]))
+  (def dispatcher (t.d/make-dispatcher *ctx handlers :update-middleware [log-update-mw auth-middleware]))
   (def updater (t/start-polling *ctx dispatcher))
   (t/stop-polling updater))
