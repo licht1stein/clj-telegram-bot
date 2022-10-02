@@ -29,11 +29,11 @@ That's the goal.
 - [[#middleware][Middleware]]
   - [[#ping-pong-bot-with-middleware][Ping-Pong bot with middleware]]
 - [[#usage][Usage]]
-  - [[#environment-variables][Environment variables]]
-  - [[#password-managers][Password managers]]
-    - [[#pass][pass]]
-    - [[#1password][1Password]]
-  - [[#arbitrary-function][Arbitrary function]]
+  - [[#creating-context][Creating context]]
+    - [[#from-bot-token][From bot token]]
+    - [[#from-environment-variables][From environment variables]]
+    - [[#from-password-managers][From password managers]]
+    - [[#from-an-arbitrary-function][From an arbitrary function]]
 
 * Examples
 I know you want examples first and explanations later, so there's an [[./examples][examples]] folder, where we'll put all the interesting usage examples. But to get you started here's a couple of popular ones:
@@ -198,7 +198,11 @@ Here's and example of a modified ping-pong bot that also logs and saves every in
 #+end_src
 
 * Usage
-First you need to produce your telegram context map. There are many ways to do that, the simplest one is based on providing token as plain text:
+** Creating context
+*** From bot token
+If you need information about creating bots and getting a token, read [[https://core.telegram.org/bots/api#authorizing-your-bot][this part of the official manual]].
+
+First you need to produce your telegram context map. There are many ways to do that, the simplest one is based on providing token as plain text.
 
 #+begin_src clojure
   (require '[telegram.core :as t])
@@ -208,17 +212,17 @@ First you need to produce your telegram context map. There are many ways to do t
 
 However this is the least recommended way, as it's very insecure — you have to pass your token around the code base, and that's always a bad idea with secrets. Instead there's a bunch of helper functions to get the token from all kinds of places of varying security:
 
-** Environment variables
+*** From environment variables
 Very popular and useful if deploying to services like Heroku. Set an environment variable ~BOT_TOKEN~ to use it:
 
 #+begin_src clojure
   (def telegram (t/from-env))
 #+end_src
 
-** Password managers
+*** From password managers
 Another way is to get your token from password and secrets managers. Two are supported out of the box: [[https://www.passwordstore.org/][pass]] and [[https://developer.1password.com/docs/cli/][1Password CLI]].
 
-*** pass
+**** pass
 Normally you would use pass from command line like this:
 
 #+begin_src bash
@@ -231,7 +235,7 @@ So for example above the usage would be:
   (def telegram (t/from-pass "my-t/token"))
 #+end_src
 
-*** 1Password
+**** 1Password
 For 1Password CLI you need to provide an item name or ID (better) and field name where the token is stored. So if you have a 1Password item called ~my-bot~ and a field called ~token~, your CLI command would be:
 
 #+begin_src bash
@@ -244,7 +248,7 @@ So the corresponding code is:
   (def telegram (t/from-op "ITEM_ID" "FIELD_NAME"))
 #+end_src
 
-** Arbitrary function
+*** From an arbitrary function
 You can also initiate the config by passing an arbitrary function that takes no arguments and returns a string with bot token in it:
 
 #+begin_src clojure
