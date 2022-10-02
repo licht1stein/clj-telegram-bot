@@ -23,5 +23,6 @@
              :main main
              :scm {:url "https://github.com/licht1stein/clj-telegram-bot"
                    :connection "scm:git:git://github.com/licht1stein/clj-telegram-bot.git"
-                   :developerConnection "scm:git:ssh://git@github.com/licht1stein/clj-telegram-bot.git"x})
+                   :developerConnection "scm:git:ssh://git@github.com/licht1stein/clj-telegram-bot.git"x
+                   :tag version})
       (bb/deploy)))
