@@ -11,7 +11,7 @@ This library is inspired by the excellent [[https://python-telegram-bot.org/][py
 
 That's the goal.
 
-* Table of contents                                                     :toc:
+* Table of contents                                                     :toc_3:
 - [[#warning][Warning!]]
 - [[#motivation][Motivation]]
 - [[#examples][Examples]]
@@ -19,13 +19,19 @@ That's the goal.
   - [[#echo-bot][Echo bot]]
   - [[#simple-command-bot][Simple command bot]]
 - [[#handlers][Handlers]]
-  - [[#type][:type]]
-  - [[#filter][:filter]]
-  - [[#actions][:actions]]
+  - [[#required-keys][Required keys]]
+    - [[#type][:type]]
+    - [[#filter][:filter]]
+    - [[#actions][:actions]]
+  - [[#optional-keys][Optional keys]]
+    - [[#passthrough][:passthrough]]
+    - [[#doc][:doc]]
 - [[#middleware][Middleware]]
 - [[#usage][Usage]]
   - [[#environment-variables][Environment variables]]
   - [[#password-managers][Password managers]]
+    - [[#pass][pass]]
+    - [[#1password][1Password]]
   - [[#arbitrary-function][Arbitrary function]]
 
 * Examples
@@ -124,25 +130,32 @@ Let's take a look at the handler we used for our ping-pong bot example:
    :filter #"ping"
    :actions [{:reply-text {:text "pong"}}]}
 #+end_src
-
-** :type
+** Required keys
+*** :type
 This describes the type of update that this handler will be applied to. Simple types are ~:message~, ~:command~, ~:inline-query~ and ~:callback-query~. Later we will add more types for more exotic cases, but these will already let you do a lot.
 
 Once a bot received an update, dispatcher will check it's type and select all handlers for this type of update. After that it will look for handlers for which the ~:filter~ matches.
 
-** :filter
+*** :filter
 The filter is a way for dispatcher to check if handler should be applied to this particular update. For messages the simplest forms of a filter is a string, which is simply checked for equality or a regex pattern, which is matched against the message text.
 
 You can also provide a ~(fn [upd ctx])~ function as a filter to implement logic of any complexity.
 
 Dispatcher checks filters from first to last until it finds a match. It then applies this handler to the update and stops. If you want the dispatcher to continue looking for more matches after this handler's actions were applied, you can achieve this by setting ~:passthrough true~ in the handler.
 
-** :actions
+*** :actions
 Vector of actions to perform. In most cases an action is some sort of response, you can provide simplest actions as ~:reply-text~ or ~:send-text~ maps. These simplify working with simpler use cases and also lets you easily test your bot. Since both update and action are just maps, you can write unit tests to check if the action produces expected result given a certain update.
 
 Action can also be a ~(fn [upd ctx])~ function, that either produces a action map (preferable) or directly interacts with telegram API or does arbitrary things (for more complex cases).
 
 You can provide multiple actions for a single handler to allow triggering multiple actions by a single update.
+
+** Optional keys
+*** :passthrough
+If set to ~true~ it will tell the dispatcher to continue applying handlers even if this one was a match. This gives you a simple mechanism to apply multiple handlers to a single update without cluttering.
+
+*** :doc
+Documentation describing this handler.
 
 * Middleware
 Source: [[./examples/ping_pong_middleware_bot.clj]]
