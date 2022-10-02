@@ -27,6 +27,7 @@ That's the goal.
     - [[#passthrough][:passthrough]]
     - [[#doc][:doc]]
 - [[#middleware][Middleware]]
+  - [[#ping-pong-bot-with-middleware][Ping-Pong bot with middleware]]
 - [[#usage][Usage]]
   - [[#environment-variables][Environment variables]]
   - [[#password-managers][Password managers]]
@@ -158,13 +159,14 @@ If set to ~true~ it will tell the dispatcher to continue applying handlers even 
 Documentation describing this handler.
 
 * Middleware
-Source: [[./examples/ping_pong_middleware_bot.clj]]
-
 When we build an API we work with requests. In Clojure they're normally just a map, usually conforming to ring spec. Telegram [[https://core.telegram.org/bots/api#update][update]] object is very similar: it's a standardized map that we process. So it seemed logical to add a possibility of applying middleware to it.
 
 Any filter, handler or middleware function in clj-telegram-bot accepts two arguments ~upd~ and ~ctx~ — update and context. Update is the map bot received from the telegram server, and context is a local map of clj-telegram-bot used for all kinds of interesting things.
 
 So middleware is any function that recieves ~upd~ and ~ctx~ and returns an ~upd~ — modified or unmodified update map. Usages can be plenty: logging updates, saving updates to file or enriching the update object with useful information, for example authentication info.
+
+** Ping-Pong bot with middleware
+Source: [[./examples/ping_pong_middleware_bot.clj]]
 
 Here's and example of a modified ping-pong bot that also logs and saves every incoming update:
 
