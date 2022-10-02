@@ -2,9 +2,9 @@
 Data driven Clojure bot library.
 
 * Warning!
-*This library is at it's first development stages. It will be some time before it's ready for usage in production.*
+*This library is under active development. APIs will probably change. Feel free to play with it though, it's pretty usable by now.*
 
-*Do not use this library yet!* If you want to stay informed about a production-ready release, subscribe to our [[https://t.me/clj_telegram_bot][Telegram channel]]. I will change the public APIs many times before release.
+If you want to stay informed about a production-ready release, subscribe to our [[https://t.me/clj_telegram_bot][Telegram channel]]. I will change the public APIs many times before release.
 
 * Motivation
 
@@ -15,6 +15,7 @@ That's the goal.
 * Table of contents                                                     :toc_4:
 - [[#warning][Warning!]]
 - [[#motivation][Motivation]]
+- [[#installation][Installation]]
 - [[#examples][Examples]]
   - [[#pingpong-bot][Ping/pong bot]]
   - [[#echo-bot][Echo bot]]
@@ -41,6 +42,13 @@ That's the goal.
       - [[#pass][pass]]
       - [[#1password][1Password]]
     - [[#from-an-arbitrary-function][From an arbitrary function]]
+
+* Installation
+Using ~deps.edn~:
+
+#+begin_src clojure
+  {:deps {com.github.licht1stein/clj-telegram-bot {:git/sha "USE_LATEST_SHA"}}
+#+end_src
 
 * Examples
 I know you want examples first and explanations later, so there's an [[./examples][examples]] folder, where we'll put all the interesting usage examples. But to get you started here's a couple of popular ones:
