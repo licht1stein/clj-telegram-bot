@@ -159,7 +159,7 @@ You can provide multiple actions for a single handler to allow triggering multip
 
 ** Optional keys
 *** :user
-Additional filter that check the :ctb/user map produced by auth middleware, to see if the current user has the right to access this handler.
+Additional filter that check the ~:ctb/user~ map produced by [[#auth-middleware][Auth middleware]] to see if the user has the right to access this handler.
 
 For a complete example see [[./examples/rights_checker_command_bot.clj][examples/rights_checker_command_bot.clj]]
 
