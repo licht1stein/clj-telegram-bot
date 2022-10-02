@@ -1,8 +1,5 @@
 #+TITLE: Clojure Telegram Bot
 Data driven Clojure bot library.
-[[https://img.shields.io/clojars/v/com.github.licht1stein/clj-telegram-bot]]
-
-<img src="https://img.shields.io/clojars/v/com.github.licht1stein/clj-telegram-bot">
 
 * Warning!
 *This library is under active development. APIs will probably change. Feel free to play with it though, it's pretty usable by now.*
@@ -49,6 +46,8 @@ That's the goal.
     - [[#from-an-arbitrary-function][From an arbitrary function]]
 
 * Installation
+You can install the library from [[https://clojars.org/com.github.licht1stein/clj-telegram-bot][Clojars]]
+
 ** Using deps.edn
 #+begin_src clojure
   com.github.licht1stein/clj-telegram-bot {:mvn/version "0.1-SNAPSHOT"}
