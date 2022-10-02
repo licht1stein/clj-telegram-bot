@@ -205,6 +205,7 @@ Here's and example of a modified ping-pong bot that also logs and saves every in
 
 ** Included middleware
 For your convenience *clj-telegram-bot* comes with some helpers to create often used middleware.
+
 *** Auth middleware
 One of the standard tasks for a bot is telling if the user is registered or not, admin or not etc. Here's an example of implementing authentication middleware:
 
@@ -229,6 +230,8 @@ One of the standard tasks for a bot is telling if the user is registered or not,
   ;; Now we can add the middleware when instantiating our dispatcher.
   (def dispatcher (t.d/make-dispatcher *ctx handlers :update-middleware [auth-middleware]))
 #+end_src
+
+For a complete example of a bot that handles some commands only if they were sent from an admin see [[./examples/rights_checker_command_bot.clj][examples/rights_checker_command_bot.clj]]
 
 * Usage
 ** Creating context

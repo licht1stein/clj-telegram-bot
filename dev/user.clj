@@ -45,7 +45,17 @@
    {:type :command
     :doc "Get user profile by id."
     :filter #"/user_(\d+)"
-    :actions [(fn [upd ctx] (println "This is a function"))]}])
+    :actions [(fn [upd ctx] (println "This is a function"))]}
+
+   {:type :command
+    :filter "/admin_fn"
+    :user (fn [user] (:admin? user))
+    :actions [{:reply-text {:text "You are an admin"}}]}
+
+   {:type :command
+    :filter "/admin"
+    :user :admin?
+    :actions [{:reply-text {:text "You are an admin"}}]}])
 
 (defn save-update-mw [upd]
   (let [temp-dir (io/file "tmp")
@@ -62,12 +72,13 @@
 
 (def user-db {22039771 {:user "Owner"
                         :admin? true}})
+
 (defn user-auth [telegram-id]
   (user-db telegram-id))
 
 (def auth-middleware (t.auth/make-auth-middleware user-auth))
 
-(comment
+(commentha
   (def dispatcher (t.d/make-dispatcher *ctx handlers :update-middleware [log-update-mw auth-middleware]))
   (def updater (t/start-polling *ctx dispatcher))
   (t/stop-polling updater))

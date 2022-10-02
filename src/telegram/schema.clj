@@ -382,11 +382,15 @@
     [:doc {:optional true} some-string]
     [:passthrough {:optional true
                    :doc "Run more handlers if this one matches."} :boolean]
+    [:user {:optional true} :ctb.handler/user]
     [:filter :ctb.handler/filter ]
     [:actions [:vector :ctb.handler/action]]]
 
    :ctb.handler/filter
    [:or some-string type:regex fn? [:enum :any]]
+
+   :ctb.handler/user
+   [:or keyword? fn?]
 
    :ctb.handler/action
    [:or fn? :ctb.handler/send-text :ctb.handler/reply-text]

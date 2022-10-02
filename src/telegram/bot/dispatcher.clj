@@ -107,12 +107,23 @@
       (string? filt) (match-string-filter handler upd nil)
       (fn? filt) (filt upd _))))
 
+(defn- user-auth?
+  "Checks if handler has `:user` key and check it's conditions if it does. If condition is true or there is no `:user` key in handler return the original handler."
+  [handler upd ctx]
+  (if-let [user-cond (:user handler)]
+    (cond
+      (keyword? user-cond) (when (-> upd :ctb/user user-cond) handler)
+      (fn? user-cond) (when (user-cond (:ctb/user upd)) handler)
+      :else (throw (ex-info "Unknown :user condition" {:user user-cond})))
+    handler))
+
 (defn- match-handlers
   "Take a list of handlers and match the update."
   [handlers upd ctx]
   (let [update-type (u/update-type upd)
-        by-type (filter #(= (:type %) update-type) handlers)]
-    (filter #(match-filter % upd ctx) by-type)))
+        by-type (filter #(= (:type %) update-type) handlers)
+        by-filter (filter #(match-filter % upd ctx) by-type)]
+    (filter #(user-auth? % upd ctx) by-filter)))
 
 (defn- process-action [action upd ctx]
   (cond
