@@ -80,11 +80,3 @@
     :date 1664193098,
     :text "/command",
     :entities [{:offset 0, :length 8, :type "bot_command"}]}})
-
-(defexpect update-schemas
-  (expect nil (m/explain s/text-update sample-text))
-  (expect nil (m/explain s/callback-query-update sample-callback-query))
-
-  (expect nil (m/explain s/update-any sample-text))
-  (expect nil (m/explain s/update-any sample-callback-query))
-  (expect nil (m/explain s/update-any sample-command-update)))
