@@ -97,6 +97,34 @@ Another classical example of a bot that responds to a command. This one responds
     (t/stop-polling updater))
 #+end_src
 
+* Handlers
+When you create a dispatcher, you need to provide a vector of handlers. In fact that's the main thing you want to do with your bot — handle incoming updates. A handler is a map with several required keys: ~:type~, ~:filter~, ~:actions~ and bunch of optional keys, like ~:doc~ or ~:passthrough~.
+
+Let's take a look at the handler we used for our ping-pong bot example:
+
+#+begin_src clojure
+  {:type :message
+   :filter #"ping"
+   :actions [{:reply-text {:text "pong"}}]}
+#+end_src
+
+** :type
+This describes the type of update that this handler will be applied to. Simple types are ~:message~, ~:command~, ~:inline-query~ and ~:callback-query~. Later we will add more types for more exotic cases, but these will already let you do a lot.
+
+Once a bot received an update, dispatcher will check it's type and select all handlers for this type of update. After that it will look for handlers for which the ~:filter~ matches.
+
+** :filter
+The filter is a way for dispatcher to check if handler should be applied to this particular update. For messages the simplest forms of a filter is a string, which is simply checked for equality or a regex pattern, which is matched against the message text.
+
+You can also provide a ~(fn [upd ctx])~ function as a filter to implement logic of any complexity.
+
+Dispatcher checks filters from first to last until it finds a match. It then applies this handler to the update and stops. If you want the dispatcher to continue looking for more matches after this handler's actions were applied, you can achieve this by setting ~:passtrough true~ in the handler.
+
+** :actions
+Vector of actions to perform. In most cases an action is some sort of response, you can provide simplest actions as ~:reply-text~ or ~:send-text~ maps. These simplify working with simpler use cases and also lets you easily test your bot. Since both update and action are just maps, you can write unit tests to check if the action produces expected result given a certain update.
+
+Action can also be a ~(fn [upd ctx])~ function, that either produces a action map (preferable) or directly interacts with telegram API or does arbitrary things (for more complex cases).
+
 * Middleware
 Source: [[./examples/ping_pong_middleware_bot.clj]]
 
