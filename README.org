@@ -97,6 +97,44 @@ Another classical example of a bot that responds to a command. This one responds
     (t/stop-polling updater))
 #+end_src
 
+* Middleware
+Source: [[./examples/ping_pong_middleware_bot.clj]]
+
+When we build an API we work with requests. In Clojure they're normally just a map, usually conforming to ring spec. Telegram [[https://core.telegram.org/bots/api#update][update]] object is very similar: it's a standardized map that we process. So it seemed logical to add a possibility of applying middleware to it.
+
+Any filter, handler or middleware function in clj-telegram-bot accepts two arguments ~upd~ and ~ctx~ — update and context. Update is the map bot received from the telegram server, and context is a local map of clj-telegram-bot used for all kinds of interesting things.
+
+So middleware is any function that recieves ~upd~ and ~ctx~ and returns an ~upd~ — modified or unmodified update map. Usages can be plenty: logging updates, saving updates to file or enriching the update object with useful information, for example authentication info.
+
+Here's and example of a modified ping-pong bot that also logs and saves every incoming update:
+
+#+begin_src clojure
+  (ns ping-pong-middleware-bot
+    (:require [telegram.core :as t]
+              [telegram.bot.dispatcher :as t.d]))
+
+  (def *ctx (t/from-token "YOUR_BOT_TOKEN"))
+
+  (def handlers
+    [{:type :message
+      :filter #"ping"
+      :actions [{:reply-text {:text "pong"}}]}])
+
+  (defn log-update [upd ctx]
+    (println upd)
+    upd)
+
+  (defn spit-update [upd ctx]
+    (spit "last-update.edn" upd)
+    upd)
+
+  (def dispatcher (t.d/make-dispatcher *ctx handlers :update-middleware [spit-update log-update]))
+  (def updater (t/start-polling *ctx dispatcher))
+
+  (comment
+    (t/stop-polling updater))
+#+end_src
+
 * Usage
 First you need to produce your telegram context map. There are many ways to do that, the simplest one is based on providing token as plain text:
 
