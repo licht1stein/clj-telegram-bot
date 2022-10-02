@@ -1,7 +1,7 @@
 #+TITLE: Clojure Telegram Bot
 Data driven Clojure bot library.
 
-* Warning!n
+* Warning!
 *This library is at it's first development stages. It will be some time before it's ready for usage in production.*
 
 *Do not use this library yet!* If you want to stay informed about a production-ready release, subscribe to our [[https://t.me/clj_telegram_bot][Telegram channel]]. I will change the public APIs many times before release.
@@ -13,7 +13,7 @@ This library is inspired by the excellent [[https://python-telegram-bot.org/][py
 That's the goal.
 
 * Table of contents                                                     :toc_4:
-- [[#warningn][Warning!n]]
+- [[#warning][Warning!]]
 - [[#motivation][Motivation]]
 - [[#examples][Examples]]
   - [[#pingpong-bot][Ping/pong bot]]
@@ -173,11 +173,11 @@ Documentation describing this handler.
 * Middleware
 When we build a simple REST API we work with requests. In Clojure they're normally just a map, usually conforming to [[https://github.com/ring-clojure/ring][ring]] spec. This approach proved to be amazingly productive, allowing different server and client libraries to interact by conforming to the ring standard.
 
-Telegram [[https://core.telegram.org/bots/api#update][update]] object can be viewed in a similar light: it's a standardized map that we process. So it seemed logical to add a possibility of applying middleware to it.
+Telegram [[https://core.telegram.org/bots/api#update][update]] object can be viewed in a similar light: it's a standardized map that we process. So it seemed logical to add a possibility of applying middleware to it.<>
 
 Any filter, handler or middleware function in clj-telegram-bot accepts two arguments ~upd~ and ~ctx~ — update and context. Update is the map bot received from the telegram server, and context is a local map of clj-telegram-bot used for all kinds of interesting things.
 
-So middleware is any function that recieves ~upd~ and ~ctx~ and returns an ~upd~ — modified or unmodified update map. Usages can be plenty: logging updates, saving updates to file or enriching the update object with useful information, for example authentication info.
+So middleware is any function that receives ~upd~ and ~ctx~ and returns an ~upd~ — modified or unmodified update map. Usages can be plenty: logging updates, saving updates to file or enriching the update object with useful information, for example authentication info.
 
 ** Example middleware
 *** Ping-Pong bot with middleware
