@@ -11,6 +11,23 @@ This library is inspired by the excellent [[https://python-telegram-bot.org/][py
 
 That's the goal.
 
+* Table of contents                                                     :toc:
+- [[#warning][Warning!]]
+- [[#motivation][Motivation]]
+- [[#examples][Examples]]
+  - [[#pingpong-bot][Ping/pong bot]]
+  - [[#echo-bot][Echo bot]]
+  - [[#simple-command-bot][Simple command bot]]
+- [[#handlers][Handlers]]
+  - [[#type][:type]]
+  - [[#filter][:filter]]
+  - [[#actions][:actions]]
+- [[#middleware][Middleware]]
+- [[#usage][Usage]]
+  - [[#environment-variables][Environment variables]]
+  - [[#password-managers][Password managers]]
+  - [[#arbitrary-function][Arbitrary function]]
+
 * Examples
 I know you want examples first and explanations later, so there's an [[./examples][examples]] folder, where we'll put all the interesting usage examples. But to get you started here's a couple of popular ones:
 
