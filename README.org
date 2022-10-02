@@ -16,6 +16,8 @@ That's the goal.
 - [[#warning][Warning!]]
 - [[#motivation][Motivation]]
 - [[#installation][Installation]]
+  - [[#using-depsedn][Using ~deps.edn~:]]
+  - [[#using-lein][Using lein]]
 - [[#examples][Examples]]
   - [[#pingpong-bot][Ping/pong bot]]
   - [[#echo-bot][Echo bot]]
@@ -44,10 +46,14 @@ That's the goal.
     - [[#from-an-arbitrary-function][From an arbitrary function]]
 
 * Installation
-Using ~deps.edn~:
-
+** Using ~deps.edn~:
 #+begin_src clojure
-  {:deps {com.github.licht1stein/clj-telegram-bot {:git/sha "USE_LATEST_SHA"}}
+  com.github.licht1stein/clj-telegram-bot {:mvn/version "0.1-SNAPSHOT"}
+#+end_src
+
+** Using lein
+#+begin_src clojure
+  [com.github.licht1stein/clj-telegram-bot "0.1-SNAPSHOT"]
 #+end_src
 
 * Examples

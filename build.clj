@@ -18,5 +18,10 @@
 
 (defn deploy "Deploy the JAR to Clojars." [{:keys [version] :as opts}]
   (-> opts
-      (assoc :lib lib :version version :main main)
+      (assoc :lib lib
+             :version version
+             :main main
+             :scm {:url "https://github.com/licht1stein/clj-telegram-bot"
+                   :connection "scm:git:git://github.com/licht1stein/clj-telegram-bot.git"
+                   :developerConnection "scm:git:ssh://git@github.com/licht1stein/clj-telegram-bot.git"x})
       (bb/deploy)))
