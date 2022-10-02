@@ -7,8 +7,25 @@
 (defn get-version []
   (-> version-file slurp str/trim))
 
+(defn slurp-readme []
+  (slurp "README.org"))
+
+(defn spit-readme [data]
+  (spit "README.org" data))
+
+(defn update-version-readme [new-version]
+  (let [readme (slurp-readme)
+        deps-old (re-find #"com.github.licht1stein/clj-telegram-bot \{:mvn/version \"\S+\"\}" readme)
+        deps-new (format "com.github.licht1stein/clj-telegram-bot {:mvn/version \"%s\"}" new-version)
+        lein-old (re-find #"\[com.github.licht1stein/clj-telegram-bot \"\S+\"\]" readme)
+        lein-new (format "[com.github.licht1stein/clj-telegram-bot \"%s\"]" new-version)]
+    (-> readme
+        (str/replace deps-old deps-new)
+        (str/replace lein-old lein-new))))
+
 (defn set-version [v]
   (spit version-file v)
+  (spit-readme (update-version-readme v))
   v)
 
 (defn bump-version [version command]
@@ -49,4 +66,4 @@
   (bump-version "1.2" :minor-snapshot)
   (bump-version "1.0-SNAPSHOT" :major-snapshot)
   (bump-version "1.0" nil)
-  (set-version "1.0-SNAPSHOT"))
+  (set-version "0.1"))

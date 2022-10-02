@@ -50,12 +50,12 @@ You can install the library from [[https://clojars.org/com.github.licht1stein/cl
 
 ** Using deps.edn
 #+begin_src clojure
-  com.github.licht1stein/clj-telegram-bot {:mvn/version "0.1-SNAPSHOT"}
+  com.github.licht1stein/clj-telegram-bot {:mvn/version "0.1"}
 #+end_src
 
 ** Using lein
 #+begin_src clojure
-  [com.github.licht1stein/clj-telegram-bot "0.1-SNAPSHOT"]
+  [com.github.licht1stein/clj-telegram-bot "0.1"]
 #+end_src
 
 * Examples
