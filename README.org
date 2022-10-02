@@ -179,7 +179,7 @@ So middleware is any function that recieves ~upd~ and ~ctx~ and returns an ~upd~
 
 ** Example middleware
 *** Ping-Pong bot with middleware
-Source: [[./examples/ping_pong_middleware_bot.clj][examples/ping_pong_middleware_bot.clj]]
+Source: [[./examples/ping_pong_middleware_bot.clj][examples/ping_pong_middleware_bot.clj]]m
 
 Here's and example of a modified ping-pong bot that also logs and saves every incoming update:
 
@@ -214,7 +214,9 @@ Here's and example of a modified ping-pong bot that also logs and saves every in
 For your convenience *clj-telegram-bot* comes with some helpers to create often used middleware.
 
 *** Auth middleware
-One of the standard tasks for a bot is telling if the user is registered or not, admin or not etc. Here's an example of implementing authentication middleware:
+One of the standard tasks for a bot is telling if the user is registered or not, admin or not etc. Here's an example of implementing authentication middleware. This middleware uses the ~user-auth~ function to identify the user, and then adds the result to the update under ~:ctb/user~ key.
+
+The ~:ctb/user~ map can then be used with the [[#user][:user]] handler key to check if the user has the rights to access this handler.
 
 #+begin_src clojure
   (ns auth-middleware
