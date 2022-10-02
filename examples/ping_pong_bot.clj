@@ -2,7 +2,7 @@
   (:require [telegram.core :as t]
             [telegram.bot.dispatcher :as t.d]))
 
-(def *ctx (t/from-token "YOUR_BOT_TOKEN"))
+(def *ctx (t/from-env "BOT_TOKEN"))
 
 (def handlers
   [{:type :message
