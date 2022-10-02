@@ -171,7 +171,9 @@ If set to ~true~ it will tell the dispatcher to continue applying handlers even 
 Documentation describing this handler.
 
 * Middleware
-When we build an API we work with requests. In Clojure they're normally just a map, usually conforming to ring spec. Telegram [[https://core.telegram.org/bots/api#update][update]] object is very similar: it's a standardized map that we process. So it seemed logical to add a possibility of applying middleware to it.
+When we build a simple REST API we work with requests. In Clojure they're normally just a map, usually conforming to [[https://github.com/ring-clojure/ring][ring]] spec. This approach proved to be amazingly productive, allowing different server and client libraries to interact by conforming to the ring standard.
+
+Telegram [[https://core.telegram.org/bots/api#update][update]] object can be viewed in a similar light: it's a standardized map that we process. So it seemed logical to add a possibility of applying middleware to it.
 
 Any filter, handler or middleware function in clj-telegram-bot accepts two arguments ~upd~ and ~ctx~ — update and context. Update is the map bot received from the telegram server, and context is a local map of clj-telegram-bot used for all kinds of interesting things.
 
