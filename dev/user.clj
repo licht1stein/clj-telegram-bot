@@ -24,7 +24,6 @@
           :color-scheme
           {:nil [:bold :blue]}}))
 
-
 (def *ctx (t/from-pass "telegram/aristarhbot"))
 
 (def handlers
@@ -78,7 +77,7 @@
 
 (def auth-middleware (t.auth/make-auth-middleware user-auth))
 
-(commentha
+(comment
   (def dispatcher (t.d/make-dispatcher *ctx handlers :update-middleware [log-update-mw auth-middleware]))
   (def updater (t/start-polling *ctx dispatcher))
   (t/stop-polling updater))

@@ -1,1 +1,2 @@
-((clojure-mode . ((setenv "BOT__TOKEN" (password-store-get "telegram/aristarhbot")))))
+((clojure-mode
+  . ((cider-clojure-cli-global-options . "-A:dev"))))

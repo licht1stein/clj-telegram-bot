@@ -25,7 +25,7 @@
   (text upd ctx))
 
 (defn process-actions [upd ctx actions]
-  (when-let [send (:send-text #p actions)]
+  (when-let [send (:send-text  actions)]
     (api/send-message (:bot ctx) (:chat-id send) (:text send)))
   
   (when-let [reply (:reply-text actions)]
@@ -156,5 +156,5 @@
         (fn [upd]
           (let [update-after-mw ((apply comp update-middleware) upd)
                 actions (process-handlers handlers update-after-mw ctx)]
-            (mapv #(process-actions upd (assoc ctx :db @(:db ctx)) #p %) #p actions)))]
+            (mapv #(process-actions upd (assoc ctx :db @(:db ctx)) %) actions)))]
     dispatcher))
