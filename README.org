@@ -95,7 +95,7 @@ Classical example of a bot that responds with the same text user sent. Note the 
 #+end_src
 
 ** Simple command bot
-Source: [[./examples/simple_command_bot.clj]]
+Source: [[./examples/simple_command_bot.clj][examples/simple_command_bot.clj]]
 
 Another classical example of a bot that responds to a command. This one responds to three commands: ~/start~ and ~/help~, as recommended by the official guide, as well as ~/fn_command~ to demonstrate a function based filter:
 
