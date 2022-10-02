@@ -1,6 +1,6 @@
 (ns telegram.updates
   (:require [clojure.string :as str]))
-n
+
 (defn message-text?
   "Extract message text from an update if any. Otherwise return nil."
   [upd]
@@ -42,7 +42,7 @@ n
   "Try to figure out the type of update. Can be :command :text :callback-query or :unrecognized"
   [upd]
   (cond (command? upd) :command
-        (message-text? upd) :text
+        (message-text? upd) :message
         (callback-query? upd) :callback-query
         :else :unrecognized))
 

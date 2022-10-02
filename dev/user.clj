@@ -1,9 +1,11 @@
 (ns user
   (:require [hashp.core]
+            [malli.core :as m]
             [tick.core :as tick]
             [clojure.java.io :as io]
             [telegram.core :as t]
             [telegram.bot.dispatcher :as t.d]
+            [telegram.schema :as ts]
             [telegram.updates :as t.u]
             [puget.printer :as puget]
             [telegram.responses :as t.r]))
@@ -22,27 +24,39 @@
           {:nil [:bold :blue]}}))
 
 
-
-(def temp-dir (io/file "tmp"))
-(when-not (.exists temp-dir)
-  (.mkdir temp-dir))
-
 (def *ctx (t/from-pass "telegram/aristarhbot"))
 
 (def handlers
-  {:command {#"/start" (fn [upd ctx]
-                         {:reply-text {:text "Start command"}})}
-   :text {:default (fn [upd ctx]
-                     {:reply-text {:text (t.u/message-text? upd)}})}})
+  [{:type :message
+    :filter "ping"
+    :actions [{:reply-text {:text "pong"}}]}
+
+   {:type :message
+    :filter :any
+    :actions [(fn [upd ctx] {:reply-text {:text (t.u/message-text? upd)}})]}
+
+   {:type :command
+    :doc "Handles start command"
+    :filter #"/start"
+    :actions [{:reply-text {:text "/start command"}}]}
+
+   {:type :command
+    :doc "Get user profile by id."
+    :filter #"/user_(\d+)"
+    :actions [(fn [upd ctx] (println "This is a function"))]}])
 
 (defn save-update-mw [upd]
-  (let [ts (tick/format (tick/formatter "YYYY-MM-DD--HH-mm-ss") (tick/date-time))]
+  (let [temp-dir (io/file "tmp")
+        ts (tick/format (tick/formatter "YYYY-MM-DD--HH-mm-ss") (tick/date-time))]
+    (when-not (.exists temp-dir)
+      (.mkdir temp-dir))
     (spit (format "tmp/%s.edn" ts) (with-out-str (clojure.pprint/pprint upd))))
   upd)
 
 (defn log-update-mw [upd]
-  (let [ts (tick/format (tick/formatter "HH:mm:ss") (tick/date-time))]
-    (puget/pprint  upd print-opts))
+  (println "update")
+  ;; (let [ts (tick/format (tick/formatter "HH:mm:ss") (tick/date-time))]
+  ;;   (puget/pprint  upd print-opts))
   upd)
 
 (comment

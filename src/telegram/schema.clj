@@ -1,20 +1,61 @@
 (ns telegram.schema
   (:require [malli.core :as m]
-            [malli.generator :as mg]))
+            [malli.error :as me]
+            [malli.generator :as mg]
+            [clojure.string :as str]
+            [clojure.test.check.generators :as gen]))
 
-(def TelegramRegistry
+(def ^{:private true} telegram-id int?)
+(def ^{:private true} some-string (m/schema [:string {:min 1}]))
+
+(def ^{:private true} type:regex
+  (m/-simple-schema
+   {:type :ctb/regex
+    :pred #(= (type %) java.util.regex.Pattern)
+    :type-properties {:error/message "should be a java.util.regex.Pattern"
+                      :decode/string re-pattern
+                      :gen/gen (gen/fmap #(re-pattern %) gen/string-alphanumeric)
+                      :json-schema/type "string"
+                      :json-schema/format "string"}}))
+
+
+(defn- pattern-type
+  "Generate a malli type based on regex pattern."
+  [pattern & {:keys [error-message gen]}]
+  (m/-simple-schema
+   {:type :ctb/email
+    :pred #(re-matches pattern %)
+    :type-properties {:error/message (or error-message (format "should match regex pattern %s" pattern))
+                      :decode/string str
+                      :gen/gen (or gen (gen/fmap #(str) gen/string-ascii))
+                      :json-schema/type "string"
+                      :json-schema/format "string"}}))
+
+(def ^{:private true} type:email (pattern-type #"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$"
+                              :error-message "should be a valid email address"
+                              :gen (gen/fmap #(->> % str/lower-case (format "%s%s@example.com" (rand-int 100))) gen/string-alphanumeric)))
+
+
+(def ^{:private true} type:url (pattern-type #"^https?:\\/\\/(?:www\\.)?[-a-zA-Z0-9@:%._\\+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b(?:[-a-zA-Z0-9()@:%_\\+.~#?&\\/=]*)$"
+                            :error-message "should be a valid url"
+                            :gen (gen/fmap #(->> % str/lower-case (format "https://%s%s.com" (rand-int 100))) gen/string-alphanumeric)))
+
+
+(def  TelegramRegistry
   "Objects from Telegram API are named using :api/CamelCase, just like in the official API docs: https://core.telegram.org/bots/api"
   ;; props
   {:e/update-id [:and :int [:> 10000]]
    :e/message-id pos-int?
-   :e/telegram-id :int
-   :e/email [:re #"^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,63}$"]
-   :e/first-name [:string {:min 1}]
-   :e/last-name [:string {:min 1}]
-   :e/username [:string {:min 1}]
+   :e/some-string some-string
+   :e/telegram-id telegram-id
+   :e/email type:email
+   :e/url type:url
+   :e/first-name :e/some-string
+   :e/last-name :e/some-string
+   :e/username :e/some-string
    :e/chat-type [:enum "private" "group" "supergroup" "channel"]
    :e/date pos-int?
-   :e/some-string [:string {:min 1}]
+
 
    ;; API Objects
    :api/File
@@ -218,7 +259,7 @@
     [:video-chat-ended {:optional true} :VideoChatEnded]
     [:video-chat-participants-invited {:optional true} :VideoChatParticipantsInvited]
     [:web-app-data {:optional true} :WebAppData]
-    [:reply-markup {:optional true} :InlineKeyboardMarkup]]
+    [:reply-markup {:optional true} :api/InlineKeyboardMarkup]]
 
    :api/MessageEntity
    [:map
@@ -243,7 +284,7 @@
       "custom_emoji"]]
     [:offset pos-int?]
     [:length pos-int?]
-    [:url {:optional true} :e/some-string]
+    [:url {:optional true} :e/url]
     [:user {:optional true} [:ref :api/User]]
     [:language {:optional true} :e/some-string]
     [:custom-emoji-id {:optional true} :e/some-string]]
@@ -269,24 +310,12 @@
     [:location :api/Location]
     [:address [:string {:min 1}]]]
 
-   :LoginURL
+   :api/LoginURL
    [:map
-    [:url :e/some-string]
+    [:url :e/url]
     [:forward-text {:optional true} :e/some-string]
     [:bot-username {:optional true} :e/some-string]
     [:request-write-access {:optional true} :boolean]]
-
-   :InlineKeyboardButton
-   [:map
-    [:text :e/some-string]
-    [:url {:optional true} :e/some-string]
-    [:callback-data {:optional true} :e/some-string]
-    [:web-app :WebAppInfo]
-    [:login-url :LoginURL]
-    [:switch-inline-query {:optional true} :e/some-string]
-    [:switch-inline-query-current-chat {:optional true} :e/some-string]
-    [:callback-game {:optional true} :CallbackGame]
-    [:pay {:optional true} :boolean]]
 
    :api/PhotoSize
    [:map
@@ -327,20 +356,92 @@
    :ChatJoinRequest :not-implemented
 
    ;; Used for recursion
-   :inline-button-row [:vector :InlineKeyboardButton]
-   :inline-button-rows [:vector [:alt :inline-button-row :InlineKeyboardButton]]
+   :inline-button-row [:vector :api/InlineKeyboardButton]
+   :inline-button-rows [:vector [:alt :inline-button-row :api/InlineKeyboardButton]]
 
-   :InlineKeyboardMarkup [:vector [:alt :inline-button-rows :InlineKeyboardButton]]
+   :api/InlineKeyboardMarkup [:vector [:alt :inline-button-rows :api/InlineKeyboardButton]]
 
-   })
+   :api/InlineKeyboardButton
+   [:map
+    [:text :e/some-string]
+    [:url {:optional true} :e/url]
+    [:callback-data {:optional true} :e/some-string]
+    [:web-app :WebAppInfo]
+    [:login-url :api/LoginURL]
+    [:switch-inline-query {:optional true} :e/some-string]
+    [:switch-inline-query-current-chat {:optional true} :e/some-string]
+    [:callback-game {:optional true} :CallbackGame]
+    [:pay {:optional true} :boolean]]})
 
+(comment
+  (def sample-handlers
+    [{:type :command
+      :doc "Handles start command"
+      :filter #"/start"
+      :actions [{:reply-text {:text "/start command"}}]}
+
+     {:type :command
+      :doc "Get user profile by id."
+      :filter #"/user_(\d+)"
+      :actions [(fn [upd ctx] (println "This is a function"))]}
+     ]))
+
+(def HandlerRegistry
+  {:ctb/handlers [:vector :ctb/handler]
+
+   :ctb/handler
+   [:map
+    [:type [:enum :command :message :inline-query :callback-query :any]]
+    [:doc {:optional true} some-string]
+    [:passthrough {:optional true
+                   :doc "Run more handlers if this one matches."} :boolean]
+    [:filter :ctb.handler/filter ]
+    [:actions [:vector :ctb.handler/action]]]
+
+   :ctb.handler/filter
+   [:or some-string type:regex fn? [:enum :any]]
+
+   :ctb.handler/action
+   [:or fn? :ctb.handler/send-text :ctb.handler/reply-text]
+
+   :ctb.handler/send-text
+   [:map
+    [:send-text
+     [:map
+      [:chat-id telegram-id]
+      [:text some-string]
+      [:opts {:optional true} :map]]]]
+
+   :ctb.handler/reply-text
+   [:map
+    [:reply-text
+     [:map
+      [:text some-string]
+      [:opts {:optional true} :map]]]]})
 
 (defn get-schema
   "Get schema from the `TelegramRegistry` by keyword identifier."
-  [identifier]
+  [registry identifier]
   (m/schema
    [:schema
-    {:registry TelegramRegistry}
+    {:registry registry}
     identifier]))
 
-(def schema:User (get-schema :api/User))
+(def schema:handlers (get-schema HandlerRegistry :ctb/handlers))
+
+(defn explain-humanized [schema value]
+  (-> (m/explain schema value) me/humanize))
+
+(comment
+  (get-schema HandlerRegistry :ctb/handler)
+
+  (def schema:handler (get-schema HandlerRegistry :ctb/handler))
+  (def explain:handler (partial explain-humanized schema:handler))
+
+  (def schema:condition (get-schema HandlerRegistry :ctb.handler/condition))
+  (explain-humanized schema:condition {:foo :bar})
+
+
+  (def schema:User (get-schema :api/User))
+  (def u (mg/generate schema:User)))
+
