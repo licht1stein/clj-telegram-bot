@@ -27,9 +27,10 @@ That's the goal.
     - [[#passthrough][:passthrough]]
     - [[#doc][:doc]]
 - [[#middleware][Middleware]]
-  - [[#ping-pong-bot-with-middleware][Ping-Pong bot with middleware]]
-- [[#included-middleware][Included middleware]]
-  - [[#auth-middleware][Auth middleware]]
+  - [[#example-middleware][Example middleware]]
+    - [[#ping-pong-bot-with-middleware][Ping-Pong bot with middleware]]
+  - [[#included-middleware][Included middleware]]
+    - [[#auth-middleware][Auth middleware]]
 - [[#usage][Usage]]
   - [[#creating-context][Creating context]]
     - [[#from-bot-token][From bot token]]
@@ -169,7 +170,8 @@ Any filter, handler or middleware function in clj-telegram-bot accepts two argum
 
 So middleware is any function that recieves ~upd~ and ~ctx~ and returns an ~upd~ — modified or unmodified update map. Usages can be plenty: logging updates, saving updates to file or enriching the update object with useful information, for example authentication info.
 
-** Ping-Pong bot with middleware
+** Example middleware
+*** Ping-Pong bot with middleware
 Source: [[./examples/ping_pong_middleware_bot.clj]]
 
 Here's and example of a modified ping-pong bot that also logs and saves every incoming update:
@@ -201,9 +203,9 @@ Here's and example of a modified ping-pong bot that also logs and saves every in
     (t/stop-polling updater))
 #+end_src
 
-* Included middleware
+** Included middleware
 For your convenience *clj-telegram-bot* comes with some helpers to create often used middleware.
-** Auth middleware
+*** Auth middleware
 One of the standard tasks for a bot is telling if the user is registered or not, admin or not etc. Here's an example of implementing authentication middleware:
 
 #+begin_src clojure
