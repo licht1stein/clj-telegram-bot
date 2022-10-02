@@ -125,6 +125,8 @@ Vector of actions to perform. In most cases an action is some sort of response, 
 
 Action can also be a ~(fn [upd ctx])~ function, that either produces a action map (preferable) or directly interacts with telegram API or does arbitrary things (for more complex cases).
 
+You can provide multiple actions for a single handler to allow triggering multiple actions by a single update.
+
 * Middleware
 Source: [[./examples/ping_pong_middleware_bot.clj]]
 
