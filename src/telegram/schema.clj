@@ -373,6 +373,8 @@
     [:callback-game {:optional true} :CallbackGame]
     [:pay {:optional true} :boolean]]})
 
+(defn multimethod? [item] (= (type item) clojure.lang.MultiFn))
+
 (def HandlerRegistry
   {:ctb/handlers [:vector :ctb/handler]
 
@@ -393,7 +395,7 @@
    [:or keyword? fn?]
 
    :ctb.handler/action
-   [:or fn? ifn? :ctb.handler/send-text :ctb.handler/reply-text]
+   [:or fn? [:fn multimethod?] :ctb.handler/send-text :ctb.handler/reply-text]
 
    :ctb.handler/send-text
    [:map
