@@ -127,7 +127,7 @@
 
 (defn- process-action [action upd ctx]
   (cond
-    (fn? action) (action upd ctx)
+    (ifn? action) (action upd ctx)
     (:send-text action) action
     (:reply-text action) {:send-text (merge {:chat-id (-> upd u/from :id)} (:reply-text action))}
     :else (throw (ex-info "Don't know how to process action" {:action action}))))

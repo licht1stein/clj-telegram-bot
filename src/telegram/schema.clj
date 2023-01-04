@@ -393,7 +393,7 @@
    [:or keyword? fn?]
 
    :ctb.handler/action
-   [:or fn? :ctb.handler/send-text :ctb.handler/reply-text]
+   [:or fn? ifn? :ctb.handler/send-text :ctb.handler/reply-text]
 
    :ctb.handler/send-text
    [:map
