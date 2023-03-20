@@ -46,7 +46,7 @@ That's the goal.
     - [[#from-an-arbitrary-function][From an arbitrary function]]
 
 * Installation
-You can install the library from [[https://clojars.org/com.github.licht1stein/clj-telegram-bot][Clojars]]
+You can install the library from [[https://clojars.org/com.github.licht1stein/clj-telegram-bot][Clojars]]:
 
 ** Using deps.edn
 #+begin_src clojure
